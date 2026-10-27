@@ -1,0 +1,10 @@
+node_modules
+dist
+dist-single
+
+# Regenerate with `npm run shots`
+screenshots
+
+# Local editor and Claude settings
+.claude/settings.local.json
+.DS_Store

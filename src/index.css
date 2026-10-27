@@ -1,0 +1,186 @@
+@import "tailwindcss";
+
+/*
+  shadcn/ui tokens, mapped to the NOMAD.OS deck palette.
+  Light and dark follow the system setting.
+*/
+:root {
+  --radius: 0.625rem;
+  --background: #ffffff;
+  --foreground: #16181d;
+  --card: #ffffff;
+  --card-foreground: #16181d;
+  --muted: #f6f7f9;
+  --muted-foreground: #5e6470;
+  --faint: #697080;
+  --primary: #2f5bea;
+  --primary-foreground: #ffffff;
+  --secondary: #eef1f5;
+  --secondary-foreground: #16181d;
+  --accent: #f1f3f6;
+  --accent-foreground: #16181d;
+  --destructive: #d23b3b;
+  --border: #e5e7eb;
+  --input: #dcdfe5;
+  --ring: #2f5bea;
+  --success: #127a55;
+  --success-soft: #e5f5ee;
+  --warning: #c26a05;
+  --warning-soft: #fff4e5;
+  --info-soft: #eaf0ff;
+  --navy: #0a0f1e;
+  --bezel: #1b1e25;
+  --stage: #edeff2;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #15171c;
+    --foreground: #edeef0;
+    --card: #1c1f26;
+    --card-foreground: #edeef0;
+    --muted: #1f232b;
+    --muted-foreground: #a1a7b1;
+    --faint: #8a909b;
+    --primary: #7c9cff;
+    --primary-foreground: #0a0f1e;
+    --secondary: #262a33;
+    --secondary-foreground: #edeef0;
+    --accent: #262a33;
+    --accent-foreground: #edeef0;
+    --destructive: #f07171;
+    --border: #2a2e37;
+    --input: #3a3f4a;
+    --ring: #7c9cff;
+    --success: #4cc38a;
+    --success-soft: #14261e;
+    --warning: #f0a23b;
+    --warning-soft: #2a2014;
+    --info-soft: #1e2640;
+    --bezel: #3a3f4a;
+    --stage: #0f1115;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --background: #15171c;
+  --foreground: #edeef0;
+  --card: #1c1f26;
+  --card-foreground: #edeef0;
+  --muted: #1f232b;
+  --muted-foreground: #a1a7b1;
+  --faint: #8a909b;
+  --primary: #7c9cff;
+  --primary-foreground: #0a0f1e;
+  --secondary: #262a33;
+  --secondary-foreground: #edeef0;
+  --accent: #262a33;
+  --accent-foreground: #edeef0;
+  --destructive: #f07171;
+  --border: #2a2e37;
+  --input: #3a3f4a;
+  --ring: #7c9cff;
+  --success: #4cc38a;
+  --success-soft: #14261e;
+  --warning: #f0a23b;
+  --warning-soft: #2a2014;
+  --info-soft: #1e2640;
+  --bezel: #3a3f4a;
+  --stage: #0f1115;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, monospace;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-faint: var(--faint);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-info-soft: var(--info-soft);
+  --color-navy: var(--navy);
+  --color-bezel: var(--bezel);
+  --color-stage: var(--stage);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  /* Tailwind 4 resets buttons to the default cursor. Clickable things should look clickable. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"]:not([aria-disabled="true"]),
+  [role="switch"]:not([data-disabled]),
+  [role="checkbox"]:not([data-disabled]) {
+    cursor: pointer;
+  }
+  html {
+    scroll-padding-top: env(safe-area-inset-top, 0px);
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+  }
+  body {
+    @apply bg-stage text-foreground font-sans antialiased;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .enter {
+    animation: enter 220ms cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  @keyframes enter {
+    from { opacity: 0; transform: translateX(14px); }
+    to { opacity: 1; transform: none; }
+  }
+  .toast-in {
+    animation: toast-in 200ms ease-out;
+  }
+  @keyframes toast-in {
+    from { opacity: 0; transform: translate(-50%, -8px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+  .pulse-ring {
+    animation: pulse-ring 1.6s ease-out infinite;
+  }
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 45%, transparent); }
+    100% { box-shadow: 0 0 0 14px transparent; }
+  }
+  .notif-in {
+    animation: notif-in 420ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  }
+  @keyframes notif-in {
+    from { opacity: 0; transform: translateY(-24px) scale(0.96); }
+    to { opacity: 1; transform: none; }
+  }
+}
