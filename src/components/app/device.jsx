@@ -1,10 +1,11 @@
-import { useLayoutEffect, useRef, useState } from "react"
+import { createContext, useContext, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 function StatusBar({ time = "9:41", dark }) {
   return (
-    <div className={cn("relative flex items-center justify-between h-[50px] px-7 pt-1 text-[15px] font-semibold shrink-0", dark && "text-white")}>
+    <div className={cn("relative z-40 flex items-center justify-between h-[50px] px-7 pt-1 text-[15px] font-semibold shrink-0 pointer-events-none", dark && "text-white")}>
       <span>{time}</span>
       <span className="absolute left-1/2 top-[11px] -translate-x-1/2 w-[112px] h-[32px] rounded-full bg-black" />
       <span className="flex items-center gap-1.5">
@@ -23,14 +24,40 @@ function StatusBar({ time = "9:41", dark }) {
   )
 }
 
+/* ---------- modals: sheets and drawers cover the whole phone screen ---------- */
+const PhoneLayer = createContext(null)
+
+/**
+ * Renders a sheet or drawer over the whole phone screen, under the status bar and home indicator,
+ * the way iOS does. While it's open, the screen behind it can't be reached with the keyboard.
+ */
+export function PhoneModal({ children }) {
+  const layer = useContext(PhoneLayer)
+  useLayoutEffect(() => {
+    if (!layer) return
+    layer.open()
+    return layer.close
+  }, [layer])
+  return layer ? createPortal(children, layer.el) : children
+}
+
 export function Phone({ children, time, dark, screenClassName, label, overlay }) {
+  const [el, setEl] = useState(null)
+  const [modals, setModals] = useState(0)
+  const content = useRef(null)
+  const layer = useMemo(() => el && { el, open: () => setModals((n) => n + 1), close: () => setModals((n) => n - 1) }, [el])
+  useLayoutEffect(() => { if (content.current) content.current.inert = modals > 0 }, [modals])
+
   return (
     <div className="relative w-[390px] h-[800px] rounded-[60px] bg-bezel p-[10px] shadow-[0_40px_80px_-30px_rgba(10,15,30,.55)]" aria-label={label}>
       <div className={cn("relative h-full rounded-[50px] bg-background text-foreground overflow-hidden flex flex-col", screenClassName)}>
         <StatusBar time={time} dark={dark} />
-        <div className="flex-1 min-h-0 flex flex-col">{children}</div>
-        <div className={cn("mx-auto mb-2 mt-1 h-[5px] w-[134px] rounded-full shrink-0", dark ? "bg-white/80" : "bg-foreground/80")} />
+        <PhoneLayer.Provider value={layer}>
+          <div ref={content} className="flex-1 min-h-0 flex flex-col">{children}</div>
+        </PhoneLayer.Provider>
+        <div className={cn("relative z-40 mx-auto mb-2 mt-1 h-[5px] w-[134px] rounded-full shrink-0 pointer-events-none", dark ? "bg-white/80" : "bg-foreground/80")} />
         {overlay}
+        <div ref={setEl} className="absolute inset-0 z-30 pointer-events-none *:pointer-events-auto" />
       </div>
     </div>
   )

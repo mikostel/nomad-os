@@ -83,14 +83,17 @@ function useHashLinks(key, jump) {
  * The two windows talk over BroadcastChannel, so it works with no server.
  */
 function useOperatorBridge() {
-  const { st, set, go, agentReply } = useStore()
+  const { st, set, go, agentReply, releaseHold } = useStore()
   const latest = useRef(st)
   latest.current = st
   const channel = useRef(null)
   const snapshot = () => {
     const s = latest.current
     const t = activeThreadOf(s)
-    return { type: "state", wizard: s.wizard, screen: currentKey(s), thread: t?.title || "New chat", chat: (t?.messages || []).map((m) => ({ id: m.id, from: m.from, text: m.text, card: m.card?.type })) }
+    return {
+      type: "state", wizard: s.wizard, screen: currentKey(s), thread: t?.title || "New chat", waiting: s.threads.some((x) => x.held),
+      chat: (t?.messages || []).map((m) => ({ id: m.id, from: m.from, text: m.text, card: m.card?.type })),
+    }
   }
   useEffect(() => {
     if (typeof BroadcastChannel === "undefined") return
@@ -99,10 +102,18 @@ function useOperatorBridge() {
     c.onmessage = ({ data: m }) => {
       const trip = latest.current.trips[0]
       const ctx = trip ? { tripCity: COUNTRIES[trip.countryId].city, tripDates: trip.dates } : {}
+      // A reply goes to the chat that's waiting on the operator, or the open chat if none is.
+      const replyTo = () => {
+        const s = latest.current
+        const id = s.threads.find((t) => t.held)?.id || s.activeThread
+        releaseHold(id)
+        return id
+      }
       if (m.type === "hello") c.postMessage(snapshot())
-      if (m.type === "wizard") set({ wizard: m.on })
-      if (m.type === "say") agentReply([{ text: m.text }], 600)
-      if (m.type === "intent") agentReply(replyFor(m.intent, ctx))
+      // Turning operator mode off stops the typing dots on anything still waiting.
+      if (m.type === "wizard") set((s) => ({ wizard: m.on, threads: m.on ? s.threads : s.threads.map((t) => ({ ...t, held: 0 })) }))
+      if (m.type === "say") agentReply([{ text: m.text }], 600, replyTo())
+      if (m.type === "intent") agentReply(replyFor(m.intent, ctx), 750, replyTo())
       if (m.type === "show-agent") { set({ mode: "trip", agentView: "chat" }); go("agent") }
     }
     return () => c.close()
@@ -125,7 +136,7 @@ function usePanelPref() {
 function Toast({ msg, banner }) {
   return (
     <div key={msg.id} role="status"
-      className={cn("absolute z-30 flex items-center gap-2 border bg-background font-medium shadow-lg",
+      className={cn("absolute z-40 flex items-center gap-2 border bg-background font-medium shadow-lg",
         banner ? "notif-in left-3 right-3 top-[54px] rounded-2xl px-3.5 py-2.5 text-[13px] leading-snug"
           : "toast-in left-1/2 top-4 -translate-x-1/2 rounded-lg px-4 py-2.5 text-sm max-w-[90%]")}>
       <CircleCheck className="size-4 text-success shrink-0" />{msg.m}

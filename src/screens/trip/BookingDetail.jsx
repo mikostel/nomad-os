@@ -65,7 +65,7 @@ function Pass({ b }) {
 }
 
 export default function BookingDetail() {
-  const { st, go, set, cancelBooking, addMessages, toast } = useStore()
+  const { st, go, set, cancelBooking, addMessages, openThread, toast } = useStore()
   const b = st.bookings.find((x) => x.id === st.params.bookingId)
   const [asking, setAsking] = useState(false)
 
@@ -79,6 +79,12 @@ export default function BookingDetail() {
   }
 
   const cancelled = b.status === "cancelled"
+  // Questions about a booking go to the chat that made it, if it's still around.
+  const askAgent = () => {
+    set({ agentView: "chat" })
+    if (st.threads.some((t) => t.id === b.threadId)) openThread(b.threadId)
+    go("agent")
+  }
   const refundText = b.refund ? `You get ${b.refund} back on ${b.kind === "hotel" ? "your card" : "Checking"}.` : "Nothing was charged."
   const doCancel = () => {
     cancelBooking(b.id)
@@ -128,7 +134,7 @@ export default function BookingDetail() {
         ) : (
           <>
             <Button size="xl" variant="outline" className="w-full" onClick={() => setAsking(true)}>Cancel booking</Button>
-            <Button variant="link" className="w-full" onClick={() => { set({ agentView: "chat" }); go("agent") }}>Ask the agent about this</Button>
+            <Button variant="link" className="w-full" onClick={askAgent}>Ask the agent about this</Button>
           </>
         )}
       </div>

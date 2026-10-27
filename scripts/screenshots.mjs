@@ -99,6 +99,7 @@ const STATES = [
   ["s1-home-downloading", async (p) => { await tap(p, "Download profile"); await pause(p, 350) }, { keepToast: true }],
   ["s1-home-itinerary", async (p) => scrollScreenTo(p, "Coming up")],
   ["s1-home-profiles", async (p) => scrollScreens(p)],
+  ["s1-home-installed", async (p) => { await side(p, "Four layers"); await tap(p, "Trips") }],
   ["s2-layers", async (p) => side(p, "Four layers")],
   ["s2-layers-all-ready", async (p) => {
     await side(p, "Money"); await tap(p, "Add")
@@ -193,6 +194,18 @@ const STATES = [
     await side(p, "Agent"); await tap(p, "Book a train", false); await tap(p, "New chat")
     await pause(p, 1200); await openHistory(p); await pickThread(p, "Train to Porto"); await saw(p, "Here are trains")
   }],
+  // Unread replies, cancelled receipts, and bookings that open their own chat
+  ["chat-unread-tab", async (p) => { await side(p, "Agent"); await tap(p, "Book a train", false); await tap(p, "Trips"); await pause(p, 1100) }],
+  ["chat-unread-header", async (p) => { await side(p, "Agent"); await tap(p, "Book a train", false); await tap(p, "New chat"); await pause(p, 1100) }],
+  ["chat-unread-history", async (p) => { await side(p, "Agent"); await tap(p, "Book a train", false); await tap(p, "New chat"); await pause(p, 1100); await openHistory(p) }],
+  ["chat-receipt-cancelled", async (p) => {
+    await bookTrain(p); await tap(p, "Open Lisbon to Porto booking"); await tap(p, "Cancel booking"); await tap(p, "Yes, cancel it")
+    await tap(p, "Trips"); await tap(p, "Agent"); await saw(p, "I cancelled")
+  }],
+  ["booking-ask-agent", async (p) => {
+    await bookTrain(p); await tap(p, "New chat"); await tap(p, "Trips"); await tap(p, "Train to Porto", false)
+    await tap(p, "Ask the agent about this"); await saw(p, "Your ticket is in Trips")
+  }],
   ["link-agent", async (p) => { await p.goto(`${base}#agent`); await saw(p, "Books and pays only when you confirm") }],
 
   // Bookings
@@ -242,7 +255,12 @@ const STATES = [
     await op.getByText("Connected to the prototype").waitFor()
     await op.getByRole("switch").click()
     await p.getByLabel("Message the agent").fill("Can you find me a gym near the hotel?"); await tap(p, "Send")
-    await op.getByText("Can you find me a gym").waitFor()
+    await op.getByText("Can you find me a gym near the hotel?").last().waitFor() // the bubble, not the chat title
+    // While the operator writes, the participant sees typing dots and the panel says someone's waiting.
+    await p.getByRole("status", { name: "Agent is typing" }).waitFor()
+    await op.getByText("The participant is waiting for your reply").waitFor()
+    await p.screenshot({ path: `${outDir}operator-participant-waiting.png` })
+    await op.screenshot({ path: `${outDir}operator-panel-waiting.png` })
     await op.getByLabel("Reply as the agent").fill("There’s a gym two blocks from Casa Roma Suites. Want me to check day passes?")
     await op.getByRole("button", { name: "Send reply" }).click()
     await saw(p, "day passes")

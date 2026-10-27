@@ -21,7 +21,8 @@ npm run dev
 - Tabs: Trips (next trip, a Coming up itinerary, and your profiles), Agent, and Security (Vault, plus Keyholder and SOS).
 - Bookings open a detail screen with an offline ticket, how it’s protected, and Cancel.
 - Agent: a travel agent in chat. Tap a suggestion or type a request to book a train to Porto, find dinner nearby with reviews, order delivery, or book a Mexico City hotel. Each one ends with a confirm card showing the total (local price, about in dollars), the card it pays with, and what gets shared, with Change and Cancel. Over $100 needs Face ID. The agent refuses a restaurant that wants a bank transfer and leaves out a scam hotel listing, and says why. Confirmed bookings appear in Coming up on Trips, and the hotel confirmation shows in triage after a lost phone.
-- Agent chats: the pen icon starts a new chat, and the clock icon opens History. Each chat is named after its first request. Reopen any chat, or delete it (its bookings stay in Trips). Two past chats from the Barcelona and Tokyo trips are there from the start.
+- Agent chats: the pen icon starts a new chat, and the clock icon opens History. A tapped prompt gets a short title, and a typed one keeps your words. Reopen any chat, or delete it (its bookings stay in Trips). Two past chats from the Barcelona and Tokyo trips are there from the start.
+- If a reply lands while you’re elsewhere, the Agent tab and History show a dot until you open that chat. A booking cancelled from Trips shows as cancelled in its chat, and “Ask the agent about this” opens the chat that made it.
 - Check my setup (deck slide 2): ask the agent, or tap it on Four layers. Choose what to share, then work through a short checklist one item at a time. Each item says why, shows how to do it yourself next time, and waits for you to approve, skip, or undo. Approving updates the matching layer.
 
 **After a loss (borrowed laptop plus the Keyholder’s phone)**
@@ -36,7 +37,7 @@ The side panel shows each screen’s deck label and annotations, and lets you ju
 
 - Your place survives a reload. Reset starts over.
 - Hide notes in the header hides the side panel so the device gets the whole stage.
-- Open operator panel (bottom of the side panel) opens a second window. Turn on “You answer for the agent” and reply to a participant live, with free text or the scripted cards. It uses BroadcastChannel, so both windows must be in the same browser, served from `npm run dev` or a host (not a `file://` copy).
+- Open operator panel (bottom of the side panel) opens a second window. Turn on “You answer for the agent” and reply to a participant live, with free text or the scripted cards. The participant sees typing dots until you reply, and the panel tells you when someone’s waiting. It uses BroadcastChannel, so both windows must be in the same browser, served from `npm run dev` or a host (not a `file://` copy).
 
 ## Direct links
 

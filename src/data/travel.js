@@ -124,10 +124,15 @@ export const blankThread = (id, updated = 0) => ({
 })
 
 // A thread is named after its first request, so history reads like a list of trips, not timestamps.
+// Tapped prompts get a short preset title. Anything typed keeps the person's own words, since keyword
+// matching can mislabel it ("a gym near the hotel" isn't a hotel booking).
 const THREAD_TITLE = { train: "Train to Porto", restaurants: "Dinner nearby", delivery: "Delivery tonight", hotel: "Hotel in Mexico City", setup: "Setup check" }
 export const titleFor = (text) => {
   const t = text.trim()
-  return THREAD_TITLE[detectIntent(t)] || (t.length > 34 ? `${t.slice(0, 32).trimEnd()}…` : t)
+  const preset = [...TILES.map((x) => x.text), ...SUGGESTIONS.map((x) => x.text)].includes(t) && THREAD_TITLE[detectIntent(t)]
+  const cut = t.length > 34 ? `${t.slice(0, t.lastIndexOf(" ", 33) > 12 ? t.lastIndexOf(" ", 33) : 32).replace(/[\s,.;:!?]+$/, "")}…` : t
+  const title = preset || cut
+  return title.charAt(0).toUpperCase() + title.slice(1) // sentence case, even if typed in lowercase
 }
 
 // Past chats from the trips already in the mock data (Barcelona in July, Tokyo in March).

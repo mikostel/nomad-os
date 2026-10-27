@@ -28,7 +28,7 @@ export default function Safety() {
     <Screen id={`safety-${id}`}>
       <Back label={c.city} onClick={() => go("layers", { countryId: id })} />
       <Title sub="Someone you trust who can approve a recovery if you lose your phone.">
-        {st.pickingKeyholder ? "Pick a Keyholder" : "Choose a Keyholder"}
+        {st.pickingKeyholder ? "Pick a Keyholder" : status === "sent" ? "Your Keyholder" : "Choose a Keyholder"}
       </Title>
 
       <KeyholderPicker />

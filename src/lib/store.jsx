@@ -7,8 +7,9 @@ let msgSeq = 0
 
 /* ---------- saved state: a reload mid-demo picks up where you were ---------- */
 export const STORAGE_KEY = "nomad-os:state"
-// Bump this whenever the shape of the mock data or state changes. Saves from an older build are
-// thrown away instead of loaded, so a stale save can never crash the prototype.
+// Bump this when you add a field the code relies on, like a trip's flight. Saves from an older build
+// are thrown away instead of loaded, so a stale save can never crash the prototype. Optional fields
+// that are fine as undefined (a thread's unread or held) don't need a bump.
 const SAVE_VERSION = 4
 
 function loadState() {
@@ -19,8 +20,9 @@ function loadState() {
     const base = initialState()
     // Fill in fields a save might lack, like a trip's flight, from the current mock data.
     const trips = saved.st.trips.map((t) => ({ ...base.trips.find((b) => b.id === t.id), ...t }))
-    // Replies that were on their way when the page closed won't arrive, so no thread is still typing.
-    const threads = saved.st.threads.map((t) => ({ ...t, typing: 0 }))
+    // Replies that were on their way when the page closed won't arrive, so no thread is still typing
+    // or waiting on the operator.
+    const threads = saved.st.threads.map((t) => ({ ...t, typing: 0, held: 0 }))
     const st = { ...base, ...saved.st, trips, threads, loss: { ...initialLoss(), ...saved.st.loss }, downloading: null }
     if (!threads.some((t) => t.id === st.activeThread)) st.activeThread = threads[0]?.id
     // Keep new message and thread ids unique after a reload.
@@ -82,10 +84,17 @@ export function StoreProvider({ children }) {
     replyTimers.current.push(setTimeout(() => {
       setSt((s) => withThread(s, id, (t) => ({
         ...t, typing: Math.max(0, t.typing - 1), updated: ++msgSeq,
+        // A reply you weren't looking at gets a dot on the Agent tab and in History.
+        unread: t.unread || !isViewing(s, id),
         messages: [...t.messages, ...msgs.map((m) => ({ id: `m${++msgSeq}`, from: "agent", ...m }))],
       })))
     }, delay))
   }, [])
+  const markRead = useCallback((id) => setSt((s) => withThread(s, id, (t) => ({ ...t, unread: false }))), [])
+  // User testing: while the operator answers instead of the script, the thread shows typing dots
+  // until a reply arrives, so the participant knows the agent is working on it.
+  const holdForOperator = useCallback((id) => setSt((s) => withThread(s, id, (t) => ({ ...t, held: (t.held || 0) + 1 }))), [])
+  const releaseHold = useCallback((id) => setSt((s) => withThread(s, id, (t) => ({ ...t, held: 0 }))), [])
   const updateCard = useCallback((id, patch) =>
     setSt((s) => ({
       ...s,
@@ -171,7 +180,8 @@ export function StoreProvider({ children }) {
   }, [st.mode, st.loss.step, setLoss])
 
   const value = {
-    st, set, setProfile, setLoss, setAgent, addMessages, agentReply, updateCard, newThread, openThread, deleteThread, addBooking, cancelBooking,
+    st, set, setProfile, setLoss, setAgent, addMessages, agentReply, updateCard, markRead, holdForOperator, releaseHold,
+    newThread, openThread, deleteThread, addBooking, cancelBooking,
     go, toast, toastMsg, startDownload, reset, callouts, setCallouts,
   }
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
@@ -212,6 +222,8 @@ function withThread(s, id, fn) {
   return { ...s, threads: s.threads.map((t) => (t.id === id ? fn(t) : t)) }
 }
 export const isEmptyThread = (t) => !t.messages.some((m) => m.from === "me")
+/** Is this thread on screen right now? */
+const isViewing = (s, id) => s.mode === "trip" && s.screen === "agent" && s.agentView !== "setup" && s.activeThread === id
 export const activeThreadOf = (st) => st.threads.find((t) => t.id === st.activeThread) || st.threads[0]
 /** Bookings made in a thread that still stand, plus any from before this prototype's session. */
 export const threadBookings = (st, t) => (t.pastBookings || 0) + st.bookings.filter((b) => b.threadId === t.id && b.status !== "cancelled").length

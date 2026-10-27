@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Co, TabBar } from "@/components/app/kit"
+import { PhoneModal } from "@/components/app/device"
 import {
   DELIVERY, HOME_ADDRESS, HOTELS, HOTEL_NIGHTS, PARTY_SIZES, PAY_WITH, RESTAURANTS, SECURITY, SETUP_TEXT, STEP_UP_USD,
   SUGGESTIONS, TABLE_TIMES, TILES, TODAY, TOMORROW, TRAINS, TRAIN_ROUTE, about, detectIntent, price, replyFor, toUsd,
@@ -17,10 +18,11 @@ import { cn } from "@/lib/utils"
 
 export const KIND_ICON = { train: TrainFront, table: Utensils, delivery: Bike, hotel: BedDouble, flight: Plane }
 const TILE_ICON = { train: TrainFront, restaurants: Utensils, delivery: Bike, hotel: BedDouble }
+const PROMPTS = new Set([...TILES, ...SUGGESTIONS].map((x) => x.text))
 
 /* ---------- flows: what the agent says next ---------- */
 function useFlows() {
-  const { st, set, go, addMessages, agentReply, updateCard, addBooking } = useStore()
+  const { st, set, go, addMessages, agentReply, updateCard, addBooking, holdForOperator } = useStore()
   // Everything a flow says goes to the open thread, even if a reply lands after you've moved on.
   const thread = st.activeThread
   const trip = st.trips[0]
@@ -30,8 +32,9 @@ function useFlows() {
   const send = (text) => {
     if (!text.trim()) return
     addMessages([{ text: text.trim() }], "me", thread)
-    // During a user test, the operator panel answers instead of the script.
-    if (!st.wizard) agentReply(replyFor(detectIntent(text), ctx), 750, thread)
+    // During a user test, the operator panel answers instead of the script. Until it does, the agent shows it's typing.
+    if (st.wizard) holdForOperator(thread)
+    else agentReply(replyFor(detectIntent(text), ctx), 750, thread)
   }
 
   const choose = (msg, patch, echo, next) => {
@@ -375,15 +378,17 @@ function Risk({ msg }) {
 }
 
 function Receipt({ msg }) {
-  const { go } = useStore()
+  const { st, go } = useStore()
   const c = msg.card
   const Icon = KIND_ICON[c.kind]
+  // A booking cancelled later, from its booking screen, shows as cancelled here too.
+  const cancelled = st.bookings.find((b) => b.id === c.bookingId)?.status === "cancelled"
   return (
-    <button onClick={() => go("booking", { bookingId: c.bookingId })} aria-label={`Open ${c.title} booking`}
-      className="self-stretch rounded-2xl bg-success-soft p-3 flex items-center gap-3 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50">
-      <span className="grid place-items-center size-9 rounded-xl bg-success text-white shrink-0"><Icon className="size-[18px]" /></span>
-      <span className="min-w-0 flex-1"><span className="block font-semibold leading-snug">{c.title}</span><span className="block text-[12.5px] text-muted-foreground">{c.summary}</span></span>
-      <span className="font-mono text-[11.5px] text-muted-foreground shrink-0">{c.ref}</span>
+    <button onClick={() => go("booking", { bookingId: c.bookingId })} aria-label={`Open ${c.title} booking${cancelled ? ", cancelled" : ""}`}
+      className={cn("self-stretch rounded-2xl p-3 flex items-center gap-3 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50", cancelled ? "bg-muted" : "bg-success-soft")}>
+      <span className={cn("grid place-items-center size-9 rounded-xl shrink-0", cancelled ? "bg-secondary text-muted-foreground" : "bg-success text-white")}><Icon className="size-[18px]" /></span>
+      <span className="min-w-0 flex-1"><span className={cn("block font-semibold leading-snug", cancelled && "text-muted-foreground")}>{c.title}</span><span className="block text-[12.5px] text-muted-foreground">{c.summary}</span></span>
+      {cancelled ? <Badge variant="outline">Cancelled</Badge> : <span className="font-mono text-[11.5px] text-muted-foreground shrink-0">{c.ref}</span>}
       <ChevronRight className="size-4 text-faint shrink-0" />
     </button>
   )
@@ -413,8 +418,8 @@ function FaceIdSheet({ msg, onDone, onCancel }) {
   }, [])
   const c = msg.card
   return (
-    <div className="absolute inset-0 z-20 flex items-end bg-black/40" role="dialog" aria-modal="true" aria-label="Confirm with Face ID">
-      <div className="notif-in w-full rounded-t-3xl border-t bg-card px-5 pt-5 pb-6 text-center shadow-2xl">
+    <div className="fade-in absolute inset-0 flex items-end bg-black/40" role="dialog" aria-modal="true" aria-label="Confirm with Face ID">
+      <div className="sheet-in w-full rounded-t-3xl border-t bg-card px-5 pt-5 pb-9 text-center shadow-2xl">
         <span className={cn("mx-auto grid place-items-center size-16 rounded-2xl transition-colors", ok ? "bg-success-soft text-success" : "bg-info-soft text-primary")}>
           {ok ? <Check className="size-8" strokeWidth={2.6} /> : <ScanFace className="size-8 animate-pulse" />}
         </span>
@@ -441,9 +446,9 @@ function ChatHistory({ onClose, onPick, onNew }) {
   }
 
   return (
-    <div className="absolute inset-0 z-30 flex" role="dialog" aria-modal="true" aria-label="Chat history"
+    <div className="absolute inset-0 flex" role="dialog" aria-modal="true" aria-label="Chat history"
       onKeyDown={(e) => { if (e.key === "Escape") onClose() }}>
-      <div className="drawer-in w-[86%] h-full bg-background border-r shadow-2xl flex flex-col">
+      <div className="drawer-in w-[86%] h-full pt-[50px] bg-background border-r shadow-2xl flex flex-col">
         <div className="flex items-center justify-between pl-4 pr-2 pt-1 pb-2 border-b">
           <p className="text-[17px] font-semibold tracking-[-0.02em]">Chats</p>
           <Button variant="ghost" size="icon" aria-label="Close chat history" autoFocus onClick={onClose}><X className="size-5" /></Button>
@@ -479,14 +484,18 @@ function ChatHistory({ onClose, onPick, onNew }) {
                     <li key={t.id} className={cn("flex items-start rounded-xl", open && "bg-info-soft")}>
                       <button onClick={() => onPick(t.id)} aria-current={open ? "true" : undefined}
                         className={cn("flex-1 min-w-0 text-left pl-3 pr-1 py-2.5 rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50", !open && "hover:bg-accent/70")}>
-                        <span className="flex items-baseline justify-between gap-2">
-                          <span className="font-medium leading-snug truncate">{t.title}</span>
+                        <span className="flex items-center justify-between gap-2">
+                          <span className="flex items-center gap-1.5 min-w-0">
+                            {t.unread && <span className="size-2 rounded-full bg-primary shrink-0" aria-hidden="true" />}
+                            <span className={cn("leading-snug truncate", t.unread ? "font-semibold" : "font-medium")}>{t.title}</span>
+                            {t.unread && <span className="sr-only">, new reply</span>}
+                          </span>
                           <span className={cn("text-[11.5px] shrink-0", open ? "text-primary font-medium" : "text-muted-foreground")}>{open ? "Open" : t.when}</span>
                         </span>
                         <span className="block text-[12.5px] text-muted-foreground truncate mt-0.5">{preview(t)}</span>
                         {booked > 0 && <Badge variant="success" className="mt-1.5"><Check strokeWidth={3} />{booked} booked</Badge>}
                       </button>
-                      <Button size="icon-sm" variant="ghost" className="mt-2 mr-1 text-muted-foreground" aria-label={`Delete ${t.title}`} onClick={() => setConfirming(t.id)}>
+                      <Button size="icon" variant="ghost" className="mt-1.5 mr-0.5 text-muted-foreground" aria-label={`Delete ${t.title}`} onClick={() => setConfirming(t.id)}>
                         <Trash2 />
                       </Button>
                     </li>
@@ -497,7 +506,7 @@ function ChatHistory({ onClose, onPick, onNew }) {
           ))}
         </div>
 
-        <p className="px-4 py-3 border-t text-[12px] text-muted-foreground flex items-start gap-1.5 leading-snug">
+        <p className="px-4 pt-3 pb-7 border-t text-[12px] text-muted-foreground flex items-start gap-1.5 leading-snug">
           <ShieldCheck className="size-3.5 mt-px text-success shrink-0" />Chats are saved on this phone. Deleting one doesn’t cancel its bookings.
         </p>
       </div>
@@ -508,7 +517,7 @@ function ChatHistory({ onClose, onPick, onNew }) {
 
 /* ---------- screen ---------- */
 export default function AgentChat() {
-  const { st, updateCard, newThread, openThread } = useStore()
+  const { st, updateCard, newThread, openThread, markRead } = useStore()
   const flows = useFlows()
   const thread = activeThreadOf(st)
   const [text, setText] = useState("")
@@ -516,9 +525,23 @@ export default function AgentChat() {
   const [historyOpen, setHistoryOpen] = useState(false)
   const scroller = useRef(null)
   const historyButton = useRef(null)
-  const busy = thread.typing > 0
+  const input = useRef(null)
+  const busy = thread.typing > 0 // a scripted reply is on its way
+  const waiting = busy || thread.held > 0 // or the operator hasn't answered yet
   const started = !isEmptyThread(thread)
   const lastAgent = [...thread.messages].reverse().find((m) => m.from === "agent" && m.text)
+  const otherUnread = st.threads.some((t) => t.unread && t.id !== thread.id)
+  // Chips for what you haven't asked about in this chat yet. Only tapped prompts count, since a typed
+  // question can mention a hotel without being a hotel request.
+  const asked = new Set(thread.messages.filter((m) => m.from === "me" && PROMPTS.has(m.text)).map((m) => detectIntent(m.text)))
+  const chips = SUGGESTIONS.filter((s) => !asked.has(detectIntent(s.text)))
+
+  // New messages ease in. The ones already there when a chat opens don't.
+  const shown = useRef({ thread: null, ids: null })
+  if (shown.current.thread !== thread.id) shown.current = { thread: thread.id, ids: new Set(thread.messages.map((m) => m.id)) }
+
+  // Seeing a chat marks its replies as read.
+  useEffect(() => { if (thread.unread) markRead(thread.id) }, [thread.id, thread.unread, markRead])
 
   // Follow new messages and thread switches, but not small card updates like a quantity change.
   useEffect(() => {
@@ -531,23 +554,27 @@ export default function AgentChat() {
   const stepUpDone = () => { flows.confirm(verifying); setVerifying(null) }
   const stepUpCancel = () => { updateCard(verifying.id, { status: undefined }); setVerifying(null) }
 
-  const closeHistory = () => { setHistoryOpen(false); historyButton.current?.querySelector("button")?.focus() }
-  const startNew = () => { newThread(); setText(""); setHistoryOpen(false) }
-  const pick = (id) => { openThread(id); setText(""); setHistoryOpen(false) }
+  // Focus moves after the frame, once the screen behind the drawer can take focus again.
+  const focusLater = (el) => requestAnimationFrame(() => el()?.focus())
+  const closeHistory = () => { setHistoryOpen(false); focusLater(() => historyButton.current?.querySelector("button")) }
+  const startNew = () => { newThread(); setText(""); setHistoryOpen(false); focusLater(() => input.current) }
+  const pick = (id) => { openThread(id); setText(""); setHistoryOpen(false); focusLater(() => input.current) }
 
   return (
     <div className="relative flex-1 min-h-0 flex flex-col">
       <div className="flex items-center gap-1 px-2 pt-1 pb-2 border-b shrink-0">
         <span ref={historyButton}>
-          <Button variant="ghost" size="icon" aria-label="Chat history" aria-haspopup="dialog" aria-expanded={historyOpen} onClick={() => setHistoryOpen(true)}>
+          <Button variant="ghost" size="icon" className="relative size-10" aria-label={otherUnread ? "Chat history, new reply" : "Chat history"}
+            aria-haspopup="dialog" aria-expanded={historyOpen} onClick={() => setHistoryOpen(true)}>
             <History className="size-5" />
+            {otherUnread && <span className="absolute top-2 right-2 size-2 rounded-full bg-primary ring-2 ring-background" />}
           </Button>
         </span>
         <div className="flex-1 min-w-0 text-center">
           <p className="text-[16px] font-semibold tracking-[-0.02em] leading-tight truncate">{thread.title || "Agent"}</p>
           <p className="flex items-center justify-center gap-1 text-[11.5px] text-muted-foreground mt-0.5"><ShieldCheck className="size-3 text-success shrink-0" />Books and pays only when you confirm</p>
         </div>
-        <Button variant="ghost" size="icon" aria-label="New chat" disabled={!started} onClick={startNew}>
+        <Button variant="ghost" size="icon" className="size-10" aria-label="New chat" disabled={!started} onClick={startNew}>
           <SquarePen className="size-5" />
         </Button>
       </div>
@@ -559,7 +586,7 @@ export default function AgentChat() {
         {thread.messages.map((m) => {
           const Card = m.card && CARDS[m.card.type]
           return (
-            <div key={m.id} className="contents">
+            <div key={m.id} className={cn("flex flex-col gap-3", !shown.current.ids.has(m.id) && "msg-in")}>
               {m.text && (m.from === "me" ? <MyBubble>{m.text}</MyBubble> : <AgentText>{m.text}</AgentText>)}
               {Card && <Card msg={m} flows={flows} onStepUp={stepUp} />}
             </div>
@@ -590,30 +617,30 @@ export default function AgentChat() {
           </>
         )}
 
-        {busy && (
-          <div className="self-start flex gap-1 py-2" aria-label="Agent is typing">
+        {waiting && (
+          <div className="self-start flex gap-1 py-2" role="status" aria-label="Agent is typing">
             {[0, 1, 2].map((i) => <span key={i} className="size-1.5 rounded-full bg-muted-foreground/60 animate-pulse" style={{ animationDelay: `${i * 150}ms` }} />)}
           </div>
         )}
       </div>
 
       <div className="shrink-0 border-t pt-2 pb-3">
-        {started && (
+        {started && chips.length > 0 && (
           <div className="flex gap-1.5 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [mask-image:linear-gradient(to_right,black_85%,transparent)]">
-            {SUGGESTIONS.map((s) => (
+            {chips.map((s) => (
               <Button key={s.label} size="sm" variant="outline" className="rounded-full shrink-0" disabled={busy} onClick={() => flows.send(s.text)}>{s.label}</Button>
             ))}
           </div>
         )}
         <form onSubmit={submit} className="flex items-center gap-2 px-4">
-          <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Ask for a train, dinner, a hotel…" aria-label="Message the agent" className="h-10 rounded-full px-4" />
+          <Input ref={input} value={text} onChange={(e) => setText(e.target.value)} placeholder="Ask for a train, dinner, a hotel…" aria-label="Message the agent" className="h-10 rounded-full px-4" />
           <Button type="submit" size="icon" className="rounded-full shrink-0 size-10" aria-label="Send" disabled={!text.trim() || busy}><ArrowUp /></Button>
         </form>
       </div>
       <div className="px-5"><TabBar active="agent" /></div>
 
-      {verifying && <FaceIdSheet msg={verifying} onDone={stepUpDone} onCancel={stepUpCancel} />}
-      {historyOpen && <ChatHistory onClose={closeHistory} onPick={pick} onNew={startNew} />}
+      {verifying && <PhoneModal><FaceIdSheet msg={verifying} onDone={stepUpDone} onCancel={stepUpCancel} /></PhoneModal>}
+      {historyOpen && <PhoneModal><ChatHistory onClose={closeHistory} onPick={pick} onNew={startNew} /></PhoneModal>}
     </div>
   )
 }
