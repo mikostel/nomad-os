@@ -18,6 +18,7 @@ Clickable prototype for a product design class. Not production code.
 - Keep the deck’s annotation numbers (`<Co n={…} />`) in sync with `src/data/screens.js`. Screens the deck doesn’t number (like Agent) get a `note` instead of callouts.
 - Every screen has a direct link: `#<screen key>` from `SCREEN_META`, like `#agent` or `#triage`.
 - The Agent tab is a chat travel agent (`src/screens/trip/AgentChat.jsx`, content in `src/data/travel.js`). It books trains and hotels, finds restaurants, and orders delivery with scripted, mock replies. Anything that spends money or shares personal details must end in a confirm card with Cancel. Nothing books on its own.
+- Agent chats are threads: `st.threads` (each `{ id, title, when, updated, typing, messages }`) and `st.activeThread`. Pass a thread id to `addMessages` and `agentReply` so a late reply lands in the thread it belongs to. Bookings carry the `threadId` they came from.
 - “Check my setup” (`src/screens/trip/Agent.jsx`, content in `src/data/agent.js`) is part of the agent and follows deck slide 2. It runs only when tapped, explains every item, and changes nothing without approval. It never changes bank settings or hides location.
 - Restaurant, hotel, delivery, and train names, prices, and reviews are invented. Don’t use real businesses.
 - Dates: “today” in the before-a-trip flow is Tue Oct 13, 2026; the trip is Oct 16 to Nov 2; the lost-phone flow is Mon Oct 26.

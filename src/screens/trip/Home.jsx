@@ -81,13 +81,15 @@ function useItinerary() {
 }
 
 function ItineraryRow({ it }) {
-  const { st, set, go, addMessages, agentReply } = useStore()
+  const { st, set, go, newThread, addMessages, agentReply } = useStore()
   const trip = st.trips[0]
   const Icon = it.kind === "profile" ? Globe : it.kind === "ask" ? Sparkles : KIND_ICON[it.kind]
   const askAgent = () => {
+    // A request from Trips gets its own chat, not the end of whatever thread was open.
     set({ agentView: "chat" })
-    addMessages([{ text: it.ask }])
-    agentReply(replyFor(detectIntent(it.ask), { tripCity: COUNTRIES[trip.countryId].city, tripDates: trip.dates }))
+    const id = newThread()
+    addMessages([{ text: it.ask }], "me", id)
+    agentReply(replyFor(detectIntent(it.ask), { tripCity: COUNTRIES[trip.countryId].city, tripDates: trip.dates }), 750, id)
     go("agent")
   }
   const open = it.kind === "flight" ? undefined

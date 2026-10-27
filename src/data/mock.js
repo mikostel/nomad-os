@@ -1,6 +1,6 @@
 // All data here is mock content for the prototype. Country notes are illustrative,
 // not researched travel or legal guidance.
-import { GREETING } from "@/data/travel"
+import { SEED_THREADS, blankThread } from "@/data/travel"
 
 export const USER = { name: "Dani", homeLine: "+1 ••• ••• 4471" }
 
@@ -130,8 +130,10 @@ export const initialState = () => ({
   showWords: false,
   agent: {}, // per country: { phase: intro | checking | results, share, decisions }
   agentView: "chat", // chat | setup
-  chat: [{ id: "m0", from: "agent", text: GREETING }], // { id, from: agent | me, text?, card?: { type, ..., state } }
-  chatTyping: 0, // replies still on their way
+  // Agent chats. Each thread: { id, title, when, updated, typing, messages }.
+  // A message: { id, from: agent | me, text?, card?: { type, ..., state } }. typing counts replies on their way.
+  threads: [blankThread("c0"), ...SEED_THREADS],
+  activeThread: "c0",
   wizard: false, // operator panel controls the agent's replies (user testing)
   bookings: [], // { id, kind: train | table | delivery | hotel, title, sub }
   loss: initialLoss(),

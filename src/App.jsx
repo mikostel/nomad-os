@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Browser, Fit, Phone } from "@/components/app/device"
 import { Wordmark } from "@/components/app/kit"
 import { ANNOTATIONS, JUMP_GROUPS, SCREEN_META } from "@/data/screens"
-import { initialLoss, useStore } from "@/lib/store"
+import { activeThreadOf, initialLoss, useStore } from "@/lib/store"
 import { replyFor } from "@/data/travel"
 import { COUNTRIES } from "@/data/mock"
 import { OPERATOR_CHANNEL } from "@/screens/operator/Operator"
@@ -89,7 +89,8 @@ function useOperatorBridge() {
   const channel = useRef(null)
   const snapshot = () => {
     const s = latest.current
-    return { type: "state", wizard: s.wizard, screen: currentKey(s), chat: s.chat.map((m) => ({ id: m.id, from: m.from, text: m.text, card: m.card?.type })) }
+    const t = activeThreadOf(s)
+    return { type: "state", wizard: s.wizard, screen: currentKey(s), thread: t?.title || "New chat", chat: (t?.messages || []).map((m) => ({ id: m.id, from: m.from, text: m.text, card: m.card?.type })) }
   }
   useEffect(() => {
     if (typeof BroadcastChannel === "undefined") return
@@ -106,7 +107,7 @@ function useOperatorBridge() {
     }
     return () => c.close()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { channel.current?.postMessage(snapshot()) }, [st.chat, st.wizard, st.screen, st.mode]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { channel.current?.postMessage(snapshot()) }, [st.threads, st.activeThread, st.wizard, st.screen, st.mode]) // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 /** Presenter mode hides the side panel, so the device gets the whole stage. Remembered per browser. */

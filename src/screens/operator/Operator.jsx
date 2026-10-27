@@ -66,7 +66,7 @@ export default function Operator() {
       <div className="flex-1 min-h-0 grid grid-cols-[1fr_380px]">
         <section className="min-h-0 flex flex-col border-r">
           <p className="px-5 pt-4 pb-2 text-[13px] font-semibold text-muted-foreground">
-            What the participant sees{state && <span className="font-normal"> on {state.screen}</span>}
+            What the participant sees{state && <span className="font-normal"> on {state.screen}, in “{state.thread}”</span>}
           </p>
           <div ref={log} className="flex-1 min-h-0 overflow-y-auto px-5 pb-5 flex flex-col gap-2">
             {state?.chat?.map((m) => (

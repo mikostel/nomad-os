@@ -74,6 +74,14 @@ async function bookHotel(page, fromChips = false) {
 }
 
 // Check my setup
+// Chat history drawer
+const historyPanel = (page) => page.getByRole("dialog", { name: "Chat history" })
+async function openHistory(page) {
+  await page.locator("main").getByRole("button", { name: "Chat history" }).click()
+  await historyPanel(page).waitFor()
+}
+const pickThread = (page, title) => historyPanel(page).getByRole("button", { name: new RegExp(`^${title}`) }).click()
+
 async function toSetup(page) { await side(page, "Four layers"); await tap(page, "Check my setup", false); await saw(page, "Choose what to share") }
 async function toResults(page) { await toSetup(page); await tap(page, "Check my setup"); await page.getByText("Mexico City setup").waitFor() }
 
@@ -165,6 +173,26 @@ const STATES = [
   ["chat-hotel-faceid", async (p) => { await toHotelConfirm(p); await tap(p, "Confirm booking"); await pause(p, 400) }],
   ["chat-hotel-booked", async (p) => { await bookHotel(p); await saw(p, "Before you fly") }],
   ["chat-setup-card", async (p) => { await side(p, "Agent"); await tap(p, "Check my setup", false); await saw(p, "You choose what I can see") }],
+  // Threads: new chat, history, reopen, delete
+  ["chat-history", async (p) => { await side(p, "Agent"); await openHistory(p) }],
+  ["chat-history-after-booking", async (p) => { await bookTrain(p); await openHistory(p) }],
+  ["chat-new-after-booking", async (p) => { await bookTrain(p); await tap(p, "New chat"); await saw(p, "What do you need?") }],
+  ["chat-reopen-thread", async (p) => {
+    await bookTrain(p); await tap(p, "New chat"); await openHistory(p); await pickThread(p, "Train to Porto"); await saw(p, "Your ticket is in Trips")
+  }],
+  ["chat-past-thread", async (p) => { await side(p, "Agent"); await openHistory(p); await pickThread(p, "Hotel in Barcelona"); await saw(p, "Gràcia Courtyard") }],
+  ["chat-delete-ask", async (p) => { await side(p, "Agent"); await openHistory(p); await historyPanel(p).getByRole("button", { name: "Delete Train to Kyoto" }).click() }],
+  ["chat-deleted", async (p) => {
+    await side(p, "Agent"); await openHistory(p); await historyPanel(p).getByRole("button", { name: "Delete Train to Kyoto" }).click()
+    await historyPanel(p).getByRole("button", { name: "Delete", exact: true }).click()
+    await historyPanel(p).getByText("Train to Kyoto").waitFor({ state: "detached" })
+  }],
+  ["chat-left-and-back", async (p) => { await bookTrain(p); await tap(p, "Trips"); await tap(p, "Agent"); await saw(p, "Your ticket is in Trips") }],
+  ["chat-reply-lands-in-its-thread", async (p) => {
+    // Start a new chat while the train reply is still on its way. The reply belongs to the first thread.
+    await side(p, "Agent"); await tap(p, "Book a train", false); await tap(p, "New chat")
+    await pause(p, 1200); await openHistory(p); await pickThread(p, "Train to Porto"); await saw(p, "Here are trains")
+  }],
   ["link-agent", async (p) => { await p.goto(`${base}#agent`); await saw(p, "Books and pays only when you confirm") }],
 
   // Bookings

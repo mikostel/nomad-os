@@ -83,7 +83,8 @@ export default function BookingDetail() {
   const doCancel = () => {
     cancelBooking(b.id)
     setAsking(false)
-    addMessages([{ text: `I cancelled ${b.title}. ${refundText}` }], "agent")
+    // The note lands in the chat where the booking was made.
+    addMessages([{ text: `I cancelled ${b.title}. ${refundText}` }], "agent", b.threadId)
     toast(`${b.title} cancelled`)
   }
 

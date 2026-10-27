@@ -21,6 +21,7 @@ npm run dev
 - Tabs: Trips (next trip, a Coming up itinerary, and your profiles), Agent, and Security (Vault, plus Keyholder and SOS).
 - Bookings open a detail screen with an offline ticket, how it’s protected, and Cancel.
 - Agent: a travel agent in chat. Tap a suggestion or type a request to book a train to Porto, find dinner nearby with reviews, order delivery, or book a Mexico City hotel. Each one ends with a confirm card showing the total (local price, about in dollars), the card it pays with, and what gets shared, with Change and Cancel. Over $100 needs Face ID. The agent refuses a restaurant that wants a bank transfer and leaves out a scam hotel listing, and says why. Confirmed bookings appear in Coming up on Trips, and the hotel confirmation shows in triage after a lost phone.
+- Agent chats: the pen icon starts a new chat, and the clock icon opens History. Each chat is named after its first request. Reopen any chat, or delete it (its bookings stay in Trips). Two past chats from the Barcelona and Tokyo trips are there from the start.
 - Check my setup (deck slide 2): ask the agent, or tap it on Four layers. Choose what to share, then work through a short checklist one item at a time. Each item says why, shows how to do it yourself next time, and waits for you to approve, skip, or undo. Approving updates the matching layer.
 
 **After a loss (borrowed laptop plus the Keyholder’s phone)**

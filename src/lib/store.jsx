@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react"
 import { COUNTRIES, CONTACTS, initialLoss, initialState, newProfile } from "@/data/mock"
+import { blankThread, titleFor } from "@/data/travel"
 
 const StoreContext = createContext(null)
 let msgSeq = 0
@@ -8,7 +9,7 @@ let msgSeq = 0
 export const STORAGE_KEY = "nomad-os:state"
 // Bump this whenever the shape of the mock data or state changes. Saves from an older build are
 // thrown away instead of loaded, so a stale save can never crash the prototype.
-const SAVE_VERSION = 3
+const SAVE_VERSION = 4
 
 function loadState() {
   try {
@@ -18,9 +19,12 @@ function loadState() {
     const base = initialState()
     // Fill in fields a save might lack, like a trip's flight, from the current mock data.
     const trips = saved.st.trips.map((t) => ({ ...base.trips.find((b) => b.id === t.id), ...t }))
-    const st = { ...base, ...saved.st, trips, loss: { ...initialLoss(), ...saved.st.loss }, downloading: null, chatTyping: 0 }
-    // Keep new message ids unique after a reload.
-    msgSeq = Math.max(0, ...st.chat.map((m) => Number(String(m.id).slice(1)) || 0))
+    // Replies that were on their way when the page closed won't arrive, so no thread is still typing.
+    const threads = saved.st.threads.map((t) => ({ ...t, typing: 0 }))
+    const st = { ...base, ...saved.st, trips, threads, loss: { ...initialLoss(), ...saved.st.loss }, downloading: null }
+    if (!threads.some((t) => t.id === st.activeThread)) st.activeThread = threads[0]?.id
+    // Keep new message and thread ids unique after a reload.
+    msgSeq = Math.max(0, ...threads.flatMap((t) => [t.id, ...t.messages.map((m) => m.id)]).map((id) => Number(String(id).slice(1)) || 0))
     return { st, callouts: saved.callouts ?? true }
   } catch {
     return null
@@ -29,7 +33,7 @@ function loadState() {
 
 function saveState(st, callouts) {
   try {
-    const { downloading, chatTyping, ...rest } = st // eslint-disable-line no-unused-vars
+    const { downloading, ...rest } = st // eslint-disable-line no-unused-vars
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: SAVE_VERSION, st: rest, callouts }))
   } catch {
     // Storage can be full or blocked. The prototype still works, it just won't survive a reload.
@@ -57,19 +61,63 @@ export function StoreProvider({ children }) {
       return { ...s, agent: { ...s.agent, [id]: { ...cur, ...(typeof patch === "function" ? patch(cur) : patch) } } }
     }), [])
 
-  // Chat: your messages appear right away. The agent's appear after a short typing pause.
-  // chatTyping counts replies still on their way, so overlapping replies keep the dots up.
+  // Chat threads. Your messages appear right away. The agent's appear after a short typing pause,
+  // in the thread they were asked in, even if you've switched threads or started a new one since.
   const replyTimers = useRef([])
-  const addMessages = useCallback((msgs, from = "me") =>
-    setSt((s) => ({ ...s, chat: [...s.chat, ...msgs.map((m) => ({ id: `m${++msgSeq}`, from, ...m }))] })), [])
-  const agentReply = useCallback((msgs, delay = 750) => {
-    setSt((s) => ({ ...s, chatTyping: s.chatTyping + 1 }))
+  const latest = useRef(st)
+  latest.current = st
+  const addMessages = useCallback((msgs, from = "me", threadId) =>
+    setSt((s) => {
+      const id = threadId && s.threads.some((t) => t.id === threadId) ? threadId : s.activeThread
+      return withThread(s, id, (t) => ({
+        ...t,
+        title: t.title || (from === "me" && msgs[0]?.text ? titleFor(msgs[0].text) : ""),
+        updated: ++msgSeq,
+        messages: [...t.messages, ...msgs.map((m) => ({ id: `m${++msgSeq}`, from, ...m }))],
+      }))
+    }), [])
+  const agentReply = useCallback((msgs, delay = 750, threadId) => {
+    const id = threadId || latest.current.activeThread
+    setSt((s) => withThread(s, id, (t) => ({ ...t, typing: t.typing + 1 })))
     replyTimers.current.push(setTimeout(() => {
-      setSt((s) => ({ ...s, chatTyping: Math.max(0, s.chatTyping - 1), chat: [...s.chat, ...msgs.map((m) => ({ id: `m${++msgSeq}`, from: "agent", ...m }))] }))
+      setSt((s) => withThread(s, id, (t) => ({
+        ...t, typing: Math.max(0, t.typing - 1), updated: ++msgSeq,
+        messages: [...t.messages, ...msgs.map((m) => ({ id: `m${++msgSeq}`, from: "agent", ...m }))],
+      })))
     }, delay))
   }, [])
   const updateCard = useCallback((id, patch) =>
-    setSt((s) => ({ ...s, chat: s.chat.map((m) => (m.id === id ? { ...m, card: { ...m.card, state: { ...m.card.state, ...patch } } } : m)) })), [])
+    setSt((s) => ({
+      ...s,
+      threads: s.threads.map((t) => (t.messages.some((m) => m.id === id)
+        ? { ...t, messages: t.messages.map((m) => (m.id === id ? { ...m, card: { ...m.card, state: { ...m.card.state, ...patch } } } : m)) }
+        : t)),
+    })), [])
+
+  /** Starts a fresh thread and returns its id. If the open thread is still empty, keeps using it. */
+  const newThread = useCallback(() => {
+    const s = latest.current
+    const open = s.threads.find((t) => t.id === s.activeThread)
+    if (open && isEmptyThread(open)) return open.id
+    const t = blankThread(`c${++msgSeq}`, ++msgSeq)
+    // Empty threads aren't worth keeping, so starting one drops any others.
+    setSt((cur) => ({ ...cur, threads: [t, ...cur.threads.filter((x) => !isEmptyThread(x))], activeThread: t.id }))
+    return t.id
+  }, [])
+  const openThread = useCallback((id) =>
+    setSt((s) => ({ ...s, activeThread: id, threads: s.threads.filter((t) => t.id === id || !isEmptyThread(t)) })), [])
+  /** Deletes a thread. Its bookings stay. Deleting the open thread starts a fresh one. */
+  const deleteThread = useCallback((id) =>
+    setSt((s) => {
+      let threads = s.threads.filter((t) => t.id !== id)
+      let activeThread = s.activeThread
+      if (!threads.some((t) => t.id === activeThread)) {
+        const t = blankThread(`c${++msgSeq}`, ++msgSeq)
+        threads = [t, ...threads]
+        activeThread = t.id
+      }
+      return { ...s, threads, activeThread }
+    }), [])
 
   const addBooking = useCallback((b) => setSt((s) => ({ ...s, bookings: [...s.bookings, { status: "booked", ...b }] })), [])
   const cancelBooking = useCallback((id) =>
@@ -123,7 +171,7 @@ export function StoreProvider({ children }) {
   }, [st.mode, st.loss.step, setLoss])
 
   const value = {
-    st, set, setProfile, setLoss, setAgent, addMessages, agentReply, updateCard, addBooking, cancelBooking,
+    st, set, setProfile, setLoss, setAgent, addMessages, agentReply, updateCard, newThread, openThread, deleteThread, addBooking, cancelBooking,
     go, toast, toastMsg, startDownload, reset, callouts, setCallouts,
   }
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
@@ -158,5 +206,14 @@ export function readyCount(st, countryId) {
 }
 
 export const activeBookings = (st) => st.bookings.filter((b) => b.status !== "cancelled")
+
+/* ---------- chat threads ---------- */
+function withThread(s, id, fn) {
+  return { ...s, threads: s.threads.map((t) => (t.id === id ? fn(t) : t)) }
+}
+export const isEmptyThread = (t) => !t.messages.some((m) => m.from === "me")
+export const activeThreadOf = (st) => st.threads.find((t) => t.id === st.activeThread) || st.threads[0]
+/** Bookings made in a thread that still stand, plus any from before this prototype's session. */
+export const threadBookings = (st, t) => (t.pastBookings || 0) + st.bookings.filter((b) => b.threadId === t.id && b.status !== "cancelled").length
 
 export { initialLoss }
