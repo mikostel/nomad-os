@@ -193,6 +193,15 @@
   .fade-in {
     animation: fade-in 200ms ease-out;
   }
+  .map-ping {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: map-ping 2.4s ease-out infinite;
+  }
+  @keyframes map-ping {
+    from { transform: scale(1); opacity: 0.5; }
+    to { transform: scale(3.2); opacity: 0; }
+  }
   @keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }

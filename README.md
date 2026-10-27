@@ -14,7 +14,7 @@ npm run dev
 ## What you can click through
 
 **Before a trip (Dani’s phone)**
-- Trips: download the next trip’s profile, add a trip, open later trips and installed profiles.
+- Trips: download the next trip’s profile, add a trip, open later trips and installed profiles. The trip card’s background is a dotted map of the destination, precomputed with dotted-map (`npm run map` regenerates it).
 - Add a trip: pick a destination and dates. Each country has its own mock profile.
 - Four layers: tap any layer, or “Fix N items” to jump to what isn’t ready.
 - Network, Money, Numbers, and Safety net are all driven by the selected country.
