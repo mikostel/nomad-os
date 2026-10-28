@@ -8,3 +8,6 @@ screenshots
 # Local editor and Claude settings
 .claude/settings.local.json
 .DS_Store
+
+# The built deck is a deliverable, so it stays in git
+!deck/dist/

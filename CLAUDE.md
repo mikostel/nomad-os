@@ -27,3 +27,12 @@ Clickable prototype for a product design class. Not production code.
 - When you add a field the code relies on (a trip's flight, a booking's date), bump `SAVE_VERSION` in `src/lib/store.jsx`. Otherwise an older save can load without it and crash the app. Optional fields that are fine as undefined don't need a bump.
 - Copy is sentence case, plain verbs, and never uses em dashes. Don’t give Dani pronouns; write around them.
 - After changing a screen, run `npm run shots` (or `npm run shots -- <name>`), look at the 1440x900 screenshots in `screenshots/`, and fix spacing or overflow before reporting back. Run `npm run shots -- --dark` when colors change.
+
+## Assignment 5 deck (`deck/`)
+- Plain HTML and Tailwind 4 (`deck/index.html`, `deck.css`, `deck.js`), separate from the React app. `npm run deck:build` makes one self-contained file in `deck/dist/`.
+- Each slide is a `<section class="slide">` with a `data-title` and an `<aside class="notes">` for speaker notes. Appendix slides take `data-mode="full"` and only show in Full mode. The talk stays at 10 slides.
+- Appendices B to E (framing, the E1 to E27 evidence table, traceability, sources) are carried over word for word from the Assignment 4 deck. Restyle them freely, but don't rewrite their content.
+- Icons are `<i data-i="name">`, filled in from `deck/icons.js` (Lucide paths). Add the path there before using a new name.
+- Phone images in `deck/img/` come from the prototype (`npm run deck:shots`). Recapture them after changing a screen the deck shows. The callouts on slide 8 (20 to 23) must match `src/data/screens.js`.
+- After editing the deck, run `npm run deck:build && npm run deck:check`, look at `screenshots/deck/`, and fix overflow before reporting back. The check also writes the PDFs to `deck/dist/`.
+- Blurred shadows (text-shadow, or box-shadow with blur) print as solid boxes in Preview. Turn them off under `@media print` in `deck.css`.

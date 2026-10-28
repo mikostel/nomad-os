@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOMAD.OS: Assignment 5</title>
+<meta name="description" content="NOMAD.OS, Assignment 5: an AI travel agent that books for you and never pays or shares without your OK.">
+<link rel="stylesheet" href="./deck.css">
+</head>
+<body>
+<main class="stage" aria-label="NOMAD.OS, Assignment 5">
+<div class="deck" id="deck">
+
+<!-- 01 Title -->
+<section class="slide ink" data-title="Books for you. Never without you.">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="title-map" data-title-map></div>
+  <p class="pin-label left" style="left:1194px; top:291px" aria-hidden="true"><b>Lisbon</b>Dani, today</p>
+  <p class="pin-label" style="left:760px; top:398px" aria-hidden="true"><b>Mexico City</b>Oct 16 to Nov 2</p>
+  <div class="relative flex flex-1 flex-col">
+    <!-- The app's wordmark (Wordmark in src/components/app/kit.jsx), in its dark-theme blue -->
+    <p class="text-[28px] font-bold tracking-[-0.03em]">NOMAD<span class="text-[#7c9cff]">.OS</span></p>
+    <div class="mt-auto">
+      <p class="kicker text-[#60a5fa]">Assignment 5 &middot; AI interaction prototype</p>
+      <h1 class="hl text-[72px]">Books for you.<span class="dim text-muted">Never without you.</span></h1>
+      <p class="mt-6 max-w-[540px] text-[19px] leading-[1.45] text-faint">A travel agent inside NOMAD.OS. It books trains, hotels, and dinner, and asks before it pays or shares anything.</p>
+      <p class="meta mt-6">IDSN 523 &middot; Mitch Kostelecky and Ian Harris &middot; Fall 2026</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>We’re presenting NOMAD.OS, a phone for people without a home base. In Assignment 4 we designed its security layers: a profile for every country you travel to. For this assignment we added one focused layer of AI: a travel agent that lives inside the app.</p>
+    <p>It books trains, hotels, restaurant tables, and delivery from a chat, and it never pays or shares anything without the traveler’s OK. That’s the title: books for you, never without you.</p>
+    <p>The map is our scenario. Dani is in Lisbon today, Tuesday October 13, and flies to Mexico City on the 16th. Everything you’ll see is a clickable prototype with scripted agent replies. There’s no live model, but every state is real and you can click through it yourself.</p>
+  </aside>
+</section>
+
+<!-- 02 Existing product -->
+<section class="slide" data-title="Existing product: Airalo">
+  <div class="flex items-start justify-between gap-10">
+    <div class="max-w-[660px]">
+      <p class="kicker">Existing product and selected experience</p>
+      <h2 class="hl text-[46px]">Airalo.<span class="dim">An eSIM for every country.</span></h2>
+      <p class="mt-5 text-[17px] leading-[1.5] text-body">The closest real product to our Numbers layer: a data plan you download for each country, live in minutes.</p>
+      <p class="meta mt-4">30M+ travelers &nbsp;&middot;&nbsp; 200+ destinations &nbsp;&middot;&nbsp; local, regional, and global plans</p>
+    </div>
+    <svg viewBox="100 10 250 180" class="w-[318px] shrink-0" aria-hidden="true"><g><rect x="118" y="30" width="80" height="150" rx="9" fill="#FFFFFF" stroke="#171717" stroke-width="1.8"/><rect x="122" y="39" width="72" height="132" rx="3" fill="#FFFFFF" stroke="#171717" stroke-width="1.0"/><path d="M153.0 35 h10" stroke="#171717" stroke-width="1.2" stroke-linecap="round"/><text x="130" y="62" font-family="'Geist Variable', sans-serif" font-size="10" font-weight="700" fill="#171717">eSIMs</text><rect x="126" y="72" width="64" height="24" rx="5" fill="#FFFFFF" stroke="#2563EB" stroke-width="1.6"/><text x="134" y="87.5" font-family="'Geist Mono Variable', monospace" font-size="8.5" font-weight="600" fill="#2563EB">MEX</text><rect x="158" y="81" width="24" height="2.4" rx="1.2" fill="#DBEAFE"/><rect x="158" y="87" width="16" height="2.4" rx="1.2" fill="#DBEAFE"/><rect x="126" y="102" width="64" height="24" rx="5" fill="#FFFFFF" stroke="#171717" stroke-width="1.0"/><text x="134" y="117.5" font-family="'Geist Mono Variable', monospace" font-size="8.5" font-weight="600" fill="#171717">PRT</text><rect x="158" y="111" width="24" height="2.4" rx="1.2" fill="#D4D4D4"/><rect x="158" y="117" width="16" height="2.4" rx="1.2" fill="#D4D4D4"/><rect x="126" y="132" width="64" height="24" rx="5" fill="#FFFFFF" stroke="#171717" stroke-width="1.0"/><text x="134" y="147.5" font-family="'Geist Mono Variable', monospace" font-size="8.5" font-weight="600" fill="#171717">JPN</text><rect x="158" y="141" width="24" height="2.4" rx="1.2" fill="#D4D4D4"/><rect x="158" y="147" width="16" height="2.4" rx="1.2" fill="#D4D4D4"/><rect x="126" y="164" width="64" height="10" rx="5" fill="#2563EB" stroke="#2563EB" stroke-width="1"/></g><path d="M206 96 C 236 80, 250 64, 262 52" stroke="#2563EB" stroke-width="1.8" stroke-dasharray="0.1 5.5" stroke-linecap="round" fill="none"/><rect x="232" y="20" width="96" height="30" rx="15" fill="#FFFFFF" stroke="#171717" stroke-width="1.2"/><text x="280" y="39.5" font-family="'Geist Variable', sans-serif" font-size="9.5" font-weight="600" fill="#171717" text-anchor="middle">1 per country</text><rect x="214" y="128" width="118" height="48" rx="7" fill="#FFFFFF" stroke="#A3A3A3" stroke-width="1.0"/><text x="224" y="146" font-family="'Geist Variable', sans-serif" font-size="9" font-weight="600" fill="#171717">Home line</text><text x="224" y="162" font-family="'Geist Variable', sans-serif" font-size="8.5" font-weight="400" fill="#737373">kept on for 2FA</text><path d="M198 150 C 206 150, 208 152, 214 152" fill="none" stroke="#A3A3A3" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+
+  <div class="mt-auto">
+    <p class="label">Airalo’s flow today</p>
+    <ol class="steps mt-3.5">
+      <li><span class="tile"><i data-i="globe" class="size-[18px]"></i></span><span><span class="num block">01</span><span class="mt-1 block text-[15.5px] font-medium text-ink">Pick a destination</span><span class="mt-0.5 block text-[13px] text-muted">Country or region</span></span></li>
+      <li><span class="tile"><i data-i="credit-card" class="size-[18px]"></i></span><span><span class="num block">02</span><span class="mt-1 block text-[15.5px] font-medium text-ink">Buy a data plan</span><span class="mt-0.5 block text-[13px] text-muted">Priced by data and days</span></span></li>
+      <li><span class="tile"><i data-i="download" class="size-[18px]"></i></span><span><span class="num block">03</span><span class="mt-1 block text-[15.5px] font-medium text-ink">Install the eSIM</span><span class="mt-0.5 block text-[13px] text-muted">Before you fly</span></span></li>
+      <li><span class="tile"><i data-i="wifi" class="size-[18px]"></i></span><span><span class="num block">04</span><span class="mt-1 block text-[15.5px] font-medium text-ink">Connect on arrival</span><span class="mt-0.5 block text-[13px] text-muted">Turn on the eSIM line</span></span></li>
+      <li><span class="tile"><i data-i="refresh-cw" class="size-[18px]"></i></span><span><span class="num block">05</span><span class="mt-1 block text-[15.5px] font-medium text-ink">Top up or renew</span><span class="mt-0.5 block text-[13px] text-muted">Add data any time</span></span></li>
+    </ol>
+  </div>
+
+  <div class="mt-auto grid grid-cols-3 gap-4">
+    <div class="card border-accent-soft bg-accent-wash p-5">
+      <p class="label text-accent">Selected experience</p>
+      <p class="mt-2.5 text-[17px] font-medium leading-[1.45] text-ink">The three days before a new country: getting connected, booked, and set up to work.</p>
+    </div>
+    <div class="card p-5">
+      <p class="label">Works well, keep it</p>
+      <ul class="mt-2.5 space-y-2 text-[15px] leading-[1.45] text-body">
+        <li class="flex gap-2"><i data-i="check" class="mt-[3px] size-[16px] text-accent"></i>Fully digital, live in minutes, no SIM swap</li>
+        <li class="flex gap-2"><i data-i="check" class="mt-[3px] size-[16px] text-accent"></i>Home line stays on for calls and codes</li>
+      </ul>
+    </div>
+    <div class="card p-5">
+      <p class="label">Where it stops</p>
+      <ul class="mt-2.5 space-y-2 text-[15px] leading-[1.45] text-body">
+        <li class="flex gap-2"><i data-i="x" class="mt-[3px] size-[16px] text-faint"></i>Ends at data. Stays, trains, and dinner happen in other apps</li>
+        <li class="flex gap-2"><i data-i="x" class="mt-[3px] size-[16px] text-faint"></i>Line, roaming, and code tradeoffs are left to you</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Because we’re continuing our Assignment 4 concept, we analyzed a comparable existing product: Airalo, the largest eSIM marketplace. It serves more than 30 million travelers in over 200 destinations, and it’s the closest real version of our Numbers layer.</p>
+    <p>The experience we chose is the few days before a new country: getting connected, booked, and set up to work. In Airalo, that starts with five steps: pick a destination, buy a plan, install the eSIM, connect when you land, and top up.</p>
+    <p>What works and should stay: it’s fully digital, live in minutes, with no SIM swap, and your home line stays on for calls and bank codes. Where it stops: the flow ends at a data connection. The stay, the train, and dinner happen in other apps, and the tradeoffs between lines, roaming, and codes are left to you. Airalo’s support chat helps after something breaks, not before.</p>
+  </aside>
+</section>
+
+<!-- 03 User, goal, current flow -->
+<section class="slide" data-title="User, goal, and current flow">
+  <p class="kicker">User, goal, and current flow</p>
+  <h2 class="hl text-[44px]">Dani lands in three days.<span class="dim">Every step is a different app.</span></h2>
+  <div class="mt-7 grid min-h-0 flex-1 grid-cols-[318px_1fr] gap-9">
+    <div class="card flex flex-col p-5">
+      <div class="flex items-center gap-3">
+        <span class="grid size-11 place-items-center rounded-full bg-accent text-[17px] font-semibold text-white">D</span>
+        <div><p class="text-[17px] font-semibold text-ink">Dani</p><p class="text-[13px] text-muted">Remote worker, moves every few weeks</p></div>
+      </div>
+      <p class="label mt-5">Goal</p>
+      <p class="mt-1.5 text-[16px] font-medium leading-[1.42] text-ink">Land in Mexico City on Oct 16 connected, booked, and ready to work.</p>
+      <p class="label mt-5">Decisions</p>
+      <p class="mt-1.5 text-[13.5px] leading-[1.5] text-body">Which listing is real, which card pays, what to share, which line gets bank codes</p>
+      <p class="label mt-5">Needs to know</p>
+      <p class="mt-1.5 text-[13.5px] leading-[1.5] text-body">Honest reviews, tested Wi-Fi, refund terms, which banks flag VPN logins</p>
+      <p class="meta mt-auto pt-4 text-[11.5px]">Illustrative composite from our A4 study of 27 public posts</p>
+    </div>
+    <div class="flex min-h-0 flex-col">
+      <p class="label">Current flow, Tue Oct 13</p>
+      <ol class="mt-1">
+        <li class="grid grid-cols-[36px_232px_1fr_88px] items-center gap-4 border-b border-line py-3">
+          <span class="tile"><i data-i="smartphone" class="size-[18px]"></i></span>
+          <div><p class="text-[16px] font-semibold text-ink">Buy an eSIM</p><span class="chip mt-1">Airalo</span></div>
+          <p class="text-[14.5px] leading-[1.45] text-body">Works well: live in minutes, home line kept on.</p>
+          <span class="justify-self-end"><span class="chip chip-blue">Keep</span></span>
+        </li>
+        <li class="grid grid-cols-[36px_232px_1fr_88px] items-center gap-4 border-b border-line py-3">
+          <span class="tile"><i data-i="key-round" class="size-[18px]"></i></span>
+          <div><p class="text-[16px] font-semibold text-ink">Pick a line for bank codes</p><span class="chip mt-1">Help articles</span></div>
+          <p class="text-[14.5px] leading-[1.45] text-body">Roaming or codes? Advice conflicts: three answers in one week.</p>
+          <span class="flex justify-end gap-1"><span class="ev">E14</span><span class="ev">E23</span></span>
+        </li>
+        <li class="grid grid-cols-[36px_232px_1fr_88px] items-center gap-4 border-b border-line py-3">
+          <span class="tile"><i data-i="bed-double" class="size-[18px]"></i></span>
+          <div><p class="text-[16px] font-semibold text-ink">Book 17 nights</p><span class="chip mt-1">Booking site</span></div>
+          <p class="text-[14.5px] leading-[1.45] text-body">Is the listing real? Is the Wi-Fi good enough to work from?</p>
+          <span></span>
+        </li>
+        <li class="grid grid-cols-[36px_232px_1fr_88px] items-center gap-4 border-b border-line py-3">
+          <span class="tile"><i data-i="train-front" class="size-[18px]"></i></span>
+          <div><p class="text-[16px] font-semibold text-ink">Book a train, dinner, delivery</p><span class="chip mt-1">Three more apps</span></div>
+          <p class="text-[14.5px] leading-[1.45] text-body">Card and passport typed in again. No record of who has what.</p>
+          <span></span>
+        </li>
+        <li class="grid grid-cols-[36px_232px_1fr_88px] items-center gap-4 py-3">
+          <span class="tile"><i data-i="lock" class="size-[18px]"></i></span>
+          <div><p class="text-[16px] font-semibold text-ink">Land and log in</p><span class="chip mt-1">Bank app</span></div>
+          <p class="text-[14.5px] leading-[1.45] text-body">A VPN login can freeze the bank, or a work account.</p>
+          <span class="flex justify-end gap-1"><span class="ev">E13</span><span class="ev">E26</span></span>
+        </li>
+      </ol>
+      <p class="mt-auto border-t border-line pt-3 text-[14.5px] text-body"><b class="font-semibold text-ink">Worth keeping:</b> Airalo’s speed, real reviews, free cancellation, and Dani’s own choices.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Our user is Dani, an illustrative composite from our Assignment 4 study of 27 public posts by nomads. Dani works remotely and moves every few weeks. The goal is simple: land in Mexico City on October 16 connected, booked, and ready to work.</p>
+    <p>Here’s that flow today. Buying the eSIM in Airalo works well. Then Dani has to decide which line gets bank codes, and the advice online conflicts; one nomad got three different answers in a week. Booking 17 nights means judging whether a listing is real and whether the Wi-Fi is good enough to work from. The train, dinner, and delivery are three more apps, each asking for a card and sometimes a passport, with no record of who has what. And after landing, a VPN login can freeze a bank or work account, which came up again and again in our research.</p>
+    <p>What already works: Airalo’s speed, real reviews, free cancellation, and Dani making the choices. We keep all of it. The E codes point to our Assignment 4 evidence table, in Appendix C.</p>
+  </aside>
+</section>
+
+<!-- 04 Opportunity -->
+<section class="slide" data-title="Opportunity statement">
+  <p class="kicker">Opportunity statement</p>
+  <p class="max-w-[1110px] text-[32px] leading-[1.42] tracking-[-0.012em] text-body">When <span class="fill">a remote worker</span> is trying to <span class="fill">land in a new country ready to work</span>, they experience <span class="fill">a pile of bookings and setup decisions spread across separate apps</span> because <span class="fill">each app sells one piece and leaves the risks in between to guesswork</span>. There is an opportunity to help them <span class="fill">book what they need and arrive set up, approving every payment and every detail shared</span>.</p>
+  <div class="mt-auto">
+    <p class="label">AI is not automatically the answer. We compared three options.</p>
+    <div class="mt-3 grid grid-cols-3 gap-4">
+      <div class="card flex flex-col p-5">
+        <p class="card-title"><i data-i="list-checks" class="size-[18px] text-muted"></i>A better checklist</p>
+        <p class="card-text">Same list for everyone. It can’t know that Wise flags VPN logins in Mexico, or that a listing wants a wire.</p>
+        <p class="mt-auto pt-4 text-[14px] text-muted">Kept as the fallback: every fix shows how to do it yourself.</p>
+      </div>
+      <div class="card flex flex-col p-5">
+        <p class="card-title"><i data-i="search" class="size-[18px] text-muted"></i>A better booking site</p>
+        <p class="card-text">Books one thing well, but can’t see the card, the network, or what other apps already have.</p>
+        <p class="mt-auto pt-4 text-[14px] text-muted">Simpler, but the risks in between stay with the traveler.</p>
+      </div>
+      <div class="card flex flex-col border-accent p-5 shadow-[0_0_0_3px_var(--color-accent-soft)]">
+        <p class="card-title"><i data-i="sparkles" class="size-[18px] text-accent"></i>An AI agent<span class="chip chip-blue ml-auto">Our pick</span></p>
+        <p class="card-text">Reads a plain request with dates, card, and network together, then prepares each booking to approve.</p>
+        <p class="mt-auto pt-4 text-[14px] font-medium text-accent-deep">Worth it only with a confirm step and hard limits.</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Here’s our opportunity statement. When a remote worker is trying to land in a new country ready to work, they experience a pile of bookings and setup decisions spread across separate apps, because each app sells one piece and leaves the risks in between to guesswork. There’s an opportunity to help them book what they need and arrive set up, approving every payment and every detail shared.</p>
+    <p>AI isn’t automatically the answer, so we compared three options. A better checklist is simple, but it’s the same for everyone. It can’t know that Wise flags VPN logins in Mexico, or that a listing wants a wire transfer. We kept it as the fallback: every fix shows the steps to do it yourself.</p>
+    <p>A better booking site books one thing well, but it can’t see the card, the network, or what other apps already have. An agent can read a plain request together with dates, card, and network, and prepare each booking. That’s only worth it with a confirm step and hard limits, which is the rest of our design.</p>
+  </aside>
+</section>
+
+<!-- 05 AI role -->
+<section class="slide" data-title="AI role and rationale">
+  <p class="kicker">AI role and rationale</p>
+  <h2 class="hl text-[44px]">Primary role: agent.<span class="dim">Secondary role: interpreter.</span></h2>
+  <div class="mt-7 grid min-h-0 flex-1 grid-cols-[300px_1fr_1fr] grid-rows-3 gap-3">
+    <div class="row-span-3 flex flex-col gap-3">
+      <div class="card flex flex-1 flex-col border-accent p-5">
+        <p class="label text-accent">Agent</p>
+        <p class="mt-2.5 text-[16px] font-medium leading-[1.45] text-ink">Books trains, hotels, tables, and delivery from one chat.</p>
+        <p class="mt-1.5 text-[13.5px] leading-[1.45] text-muted">Takes actions for the user within defined boundaries.</p>
+        <p class="mt-auto flex items-center gap-2 text-[12.5px] text-muted"><i data-i="smartphone" class="size-[15px] text-accent"></i>Agent tab, screen S8a</p>
+      </div>
+      <div class="card flex flex-1 flex-col p-5">
+        <p class="label">Interpreter</p>
+        <p class="mt-2.5 text-[16px] font-medium leading-[1.45] text-ink">Check my setup explains each fix for the next country.</p>
+        <p class="mt-1.5 text-[13.5px] leading-[1.45] text-muted">Makes complex information understandable.</p>
+        <p class="mt-auto flex items-center gap-2 text-[12.5px] text-muted"><i data-i="smartphone" class="size-[15px] text-accent"></i>Check my setup, screen S8b</p>
+      </div>
+    </div>
+    <div class="card px-5 py-4"><p class="card-title"><i data-i="circle-check" class="size-[18px] text-accent"></i>Why it fits</p><p class="card-text">Getting ready is many small actions across services. An agent can take them, inside limits Dani sets.</p></div>
+    <div class="card px-5 py-4"><p class="card-title"><i data-i="eye" class="size-[18px] text-accent"></i>What it needs</p><p class="card-text">The request, trip dates, the card it pays with, and network status. Banks, lines, and sign-ins only if Dani shares them.</p></div>
+    <div class="card px-5 py-4"><p class="card-title"><i data-i="list-checks" class="size-[18px] text-accent"></i>What it produces</p><p class="card-text">Shortlists with tested Wi-Fi and reviews, risk flags with reasons, confirm cards, and bookings in Trips.</p></div>
+    <div class="card px-5 py-4"><p class="card-title"><i data-i="sparkles" class="size-[18px] text-accent"></i>Value beyond Airalo</p><p class="card-text">One place to book and arrive set up. Scams flagged before anyone pays. A record of what each booking shared.</p></div>
+    <div class="card px-5 py-4"><p class="card-title"><i data-i="message-square" class="size-[18px] text-accent"></i>Where it enters</p><p class="card-text">The Agent tab, any time, and Check my setup after a profile downloads. Nothing runs in the background.</p></div>
+    <div class="card bg-panel px-5 py-4"><p class="card-title"><i data-i="hand" class="size-[18px] text-ink"></i>Stays with Dani</p><p class="card-text">Choosing, paying, what gets shared, cancelling, and anything inside a bank.</p></div>
+  </div>
+  <aside class="notes">
+    <p>Our primary AI role is agent: it takes actions for the user within defined boundaries. Here, that means booking trains, hotels, tables, and delivery from one chat. The secondary role is interpreter: Check my setup turns the destination plus Dani’s banks, lines, and accounts into a short checklist, and explains every item.</p>
+    <p>Why an agent? Getting ready is many small actions across services, which is what agents are good at, as long as they stay inside limits. It needs the request, the trip dates, the card it pays with, and network status. The setup check sees banks, lines, and sign-ins only if Dani chooses to share them.</p>
+    <p>It produces shortlists with tested Wi-Fi and reviews, risk flags with reasons, confirm cards, and bookings filed in Trips. The value beyond Airalo is one place to book and arrive set up, with scams flagged before anyone pays. It enters only from the Agent tab, or after a country profile downloads; nothing runs in the background. And choosing, paying, sharing, cancelling, and anything inside a bank stay with Dani.</p>
+  </aside>
+</section>
+
+<!-- 06 Responsibility map -->
+<section class="slide" data-title="Responsibility map">
+  <div class="grid flex-1 grid-cols-[1fr_330px] gap-10">
+    <div class="flex flex-col">
+      <p class="kicker">Human and AI responsibility map</p>
+      <h2 class="hl text-[40px]">The agent prepares.<span class="dim">Dani decides.</span></h2>
+      <table class="rmap mt-6">
+        <colgroup><col class="w-[124px]"><col><col><col></colgroup>
+        <thead><tr><th>Stage</th><th>Dani</th><th>Agent</th><th class="shared">Shared decision</th></tr></thead>
+        <tbody>
+          <tr><td>Initiation</td><td>Opens the Agent tab and asks, or taps a tile</td><td>Greets with trip context. Never starts on its own</td><td class="shared">After a hotel booking, suggests a setup check. Dani chooses to open it</td></tr>
+          <tr><td>Input and interpretation</td><td>Says what’s needed. Picks what the setup check can see</td><td>Matches the service, fills in city, dates, and card</td><td class="shared">Missing details, like a time or party size, get asked, not guessed</td></tr>
+          <tr><td>Generation or action</td><td>Compares options and reads reviews</td><td>Shortlists options. Leaves out risky ones and says why</td><td class="shared">Dani picks one. Change brings the options back</td></tr>
+          <tr><td>Decision or approval</td><td>Confirms, changes, or cancels. Face ID over $100</td><td>Shows cost, card, terms, and what’s shared first</td><td class="shared">The confirm card: the agent fills it in, Dani approves it</td></tr>
+          <tr><td>Completion and review</td><td>Checks Trips. Can cancel any time</td><td>Books, files it in Trips, says how it’s protected</td><td class="shared">Setup fixes: the agent suggests, Dani approves, skips, or undoes</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="flex flex-col gap-3.5 border-l border-line pl-8">
+      <div><p class="label">Human judgment</p><p class="mt-1 text-[13px] leading-[1.42] text-ink">Which option, paying, what’s shared, cancelling</p></div>
+      <div><p class="label">Agent prepares</p><p class="mt-1 text-[13px] leading-[1.42] text-ink">Shortlists, risk flags, confirm cards, the setup checklist</p></div>
+      <div><p class="label">Agent does alone</p><p class="mt-1 text-[13px] leading-[1.42] text-ink">Searching, filtering, filing bookings in Trips</p></div>
+      <div><p class="label">Explicit permission</p><p class="mt-1 text-[13px] leading-[1.42] text-ink">Anything that costs money or shares details. Face ID over $100</p></div>
+      <div><p class="label">Explains itself</p><p class="mt-1 text-[13px] leading-[1.42] text-ink">When it leaves something out, says no, or suggests a fix</p></div>
+      <div><p class="label">Dani steps in</p><p class="mt-1 text-[13px] leading-[1.42] text-ink">Change or Cancel on every card. Cancel later from Trips</p></div>
+      <div><p class="label">If it’s wrong</p><p class="mt-1 text-[13px] leading-[1.42] text-ink">Dani approved the card, so NOMAD.OS answers for what the card showed</p></div>
+      <div class="mt-auto rounded-[6px] bg-night p-4 text-white">
+        <p class="label text-[#60a5fa]">Never allowed</p>
+        <p class="mt-1.5 text-[13px] leading-[1.5]">Pay by bank transfer or off the booking site. Change bank settings. Hide or fake location. Act without an OK.</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>This is how work and decisions are split. The pattern in every row: the agent prepares, Dani decides.</p>
+    <p>At initiation, Dani opens the Agent tab and asks. The agent never starts on its own; the one suggestion it makes is a setup check after a hotel booking, and Dani chooses whether to open it. For input, Dani says what’s needed and picks what the setup check can see. The agent fills in city, dates, and card, and asks for anything missing, like a time or party size. For generation, it shortlists and leaves out risky options, always saying why. The decision is the confirm card: the agent fills it in with the cost, card, terms, and what gets shared, and Dani confirms, changes, or cancels. Over 100 dollars, that takes Face ID. At completion, it files the booking in Trips, and Dani can cancel later.</p>
+    <p>On the right are our answers to the map questions. If the agent is wrong, Dani approved what the card showed, so NOMAD.OS answers for the card being complete and correct. And it’s never allowed to pay by transfer or off the booking site, change bank settings, or hide location.</p>
+  </aside>
+</section>
+
+<!-- 07 Interaction flow -->
+<section class="slide" data-title="Interaction flow">
+  <p class="kicker">Proposed AI interaction flow</p>
+  <h2 class="hl text-[44px]">Eight steps, one decision point.<span class="dim">The agent never skips the confirm.</span></h2>
+  <ol class="flow mt-9">
+    <li><span class="dot"><i data-i="message-square" class="size-[17px]"></i></span><p class="num mt-4">01</p><p class="step-t">Entry</p><p class="step-d">Agent tab, or Check my setup after a profile downloads.</p><p class="step-e">Four tiles, one text field</p></li>
+    <li><span class="dot"><i data-i="user-round" class="size-[17px]"></i></span><p class="num mt-4">02</p><p class="step-t">User input</p><p class="step-d">A plain request or a tap. The setup check starts with what to share.</p><p class="step-e">“Book a hotel in Mexico City”</p></li>
+    <li><span class="dot"><i data-i="search" class="size-[17px]"></i></span><p class="num mt-4">03</p><p class="step-t">Interpretation</p><p class="step-d">Matches the service, then fills in city, dates, and card.</p><p class="step-e">Hotels, Oct 16 to Nov 2</p></li>
+    <li><span class="dot"><i data-i="sparkles" class="size-[17px]"></i></span><p class="num mt-4">04</p><p class="step-t">AI response</p><p class="step-d">A shortlist with tested Wi-Fi and reviews. Risky options left out, with why.</p><p class="step-e">3 hotels, 1 not offered</p></li>
+    <li class="key"><span class="dot"><i data-i="scan-face" class="size-[17px]"></i></span><p class="num mt-4">05</p><p class="step-t">Human decision</p><p class="step-d">A confirm card: cost, card, terms, what’s shared. Confirm, change, or cancel.</p><p class="step-e">Face ID over $100. Change goes back to 04</p></li>
+    <li><span class="dot"><i data-i="circle-check" class="size-[17px]"></i></span><p class="num mt-4">06</p><p class="step-t">Feedback</p><p class="step-d">Typing, then a receipt that says how it’s protected.</p><p class="step-e">“Wi-Fi tested at 210 Mbps”</p></li>
+    <li><span class="dot"><i data-i="undo-2" class="size-[17px]"></i></span><p class="num mt-4">07</p><p class="step-t">Recovery</p><p class="step-d">Refuses unsafe payments and offers another way. Any booking can be cancelled.</p><p class="step-e">“I didn’t book Pátio 14”</p></li>
+    <li><span class="dot"><i data-i="arrow-right" class="size-[17px]"></i></span><p class="num mt-4">08</p><p class="step-t">Exit</p><p class="step-d">Files it in Trips, names what’s left, then waits.</p><p class="step-e">“2 things to fix before you fly”</p></li>
+  </ol>
+  <div class="mt-auto grid grid-cols-2 gap-4">
+    <div class="card flex gap-3 p-4"><i data-i="circle-help" class="mt-0.5 size-[18px] text-accent"></i><div><p class="text-[14px] font-semibold text-ink">Uncertainty, shown plainly</p><p class="mt-1 text-[13px] leading-[1.45] text-body">Prices show an about-amount in dollars. Wi-Fi speeds come from other nomads’ tests. Ratings show how many reviews.</p></div></div>
+    <div class="card flex gap-3 p-4"><i data-i="hand" class="mt-0.5 size-[18px] text-accent"></i><div><p class="text-[14px] font-semibold text-ink">When it can’t help</p><p class="mt-1 text-[13px] leading-[1.45] text-body">It says what it can do instead, or hands off: “You can call Pátio 14 yourself.” Nothing is left half done.</p></div></div>
+  </div>
+  <aside class="notes">
+    <p>Here’s the interaction over time, using the hotel booking. Entry is the Agent tab, with four tiles and a text field. Dani taps Book a hotel or types the request. The system matches it to hotels and fills in the trip: Mexico City, October 16 to November 2. The agent responds with three hotels, each with Wi-Fi other nomads tested, and leaves one listing out, with the reason.</p>
+    <p>The human decision is the center of the flow. The confirm card shows everything that matters, and Dani can confirm, change, or cancel. Change loops back to the options.</p>
+    <p>Feedback is a typing state, then a receipt that says how the booking is protected. We show uncertainty plainly: prices are about-amounts in dollars, Wi-Fi speeds are measured by other nomads, and ratings show how many reviews they’re based on. Recovery covers two cases: the agent refuses an unsafe payment and offers another way, and every booking can be cancelled later. Finally, it files the booking in Trips, names what’s left before the flight, and stops.</p>
+  </aside>
+</section>
+
+<!-- 08 Prototype: booking path -->
+<section class="slide" data-title="Prototype: booking path">
+  <div class="grid flex-1 grid-cols-[320px_1fr] gap-12">
+    <div class="flex flex-col">
+      <p class="kicker">Prototype: booking path</p>
+      <h2 class="hl text-[36px]">Ask, compare, approve.<span class="dim">Nothing books until Dani confirms.</span></h2>
+      <ul class="mt-7 space-y-3 text-[13.5px] leading-[1.42] text-body">
+        <li class="flex gap-2.5"><span class="co">20</span>Every booking ends in a confirm card. Nothing books on its own.</li>
+        <li class="flex gap-2.5"><span class="co">21</span>Says exactly what gets shared, and with whom.</li>
+        <li class="flex gap-2.5"><span class="co">22</span>Big purchases need Face ID, not just a tap.</li>
+        <li class="flex gap-2.5"><span class="co">23</span>Won’t pay by transfer or off the booking site. Says why.</li>
+      </ul>
+      <p class="meta mt-auto">Clickable prototype with scripted agent replies. Screen S8a, at <b class="font-medium text-ink">#agent</b></p>
+    </div>
+    <div class="grid grid-cols-4 gap-6 self-center">
+      <figure class="phone"><img class="shot" src="./img/ask.jpg" alt="Agent tab: a greeting, four tiles for train, dinner, delivery, and hotel, and Check my setup."><figcaption><b><span class="num">01</span>Ask</b>Tiles or plain words. The header says it books and pays only when Dani confirms.</figcaption></figure>
+      <figure class="phone"><img class="shot" src="./img/compare.jpg" alt="Hotel shortlist with tested Wi-Fi speeds, and a Not offered card for a listing that asks for a wire transfer."><figcaption><b><span class="num">02</span>Compare</b>Wi-Fi tested by other nomads. A listing that wants a wire is left out, with why.</figcaption></figure>
+      <figure class="phone"><img class="shot" src="./img/approve.jpg" alt="Confirm card for Casa Roma Suites: dates, MX$23,800 total, card, what gets shared, and a Face ID note."><figcaption><b><span class="num">03</span>Approve</b>Dates, total in pesos and dollars, the card, and what the hotel gets.</figcaption></figure>
+      <figure class="phone"><img class="shot" src="./img/booked.jpg" alt="Booked receipt in the chat, then a prompt: the Mexico City profile has 2 things to fix."><figcaption><b><span class="num">04</span>Booked</b>Filed in Trips with a reference. Then one next step: 2 fixes before the flight.</figcaption></figure>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>This is the booking path in the prototype, screen S8a. First, Ask: four tiles or plain words, and the header always says the agent books and pays only when you confirm.</p>
+    <p>Second, Compare: three hotels with Wi-Fi other nomads tested. Callout 23: one listing asks for a wire transfer outside the booking site, a common scam pattern, so the agent leaves it out and says so instead of quietly hiding it.</p>
+    <p>Third, Approve. Callout 20: every booking ends in a confirm card with the dates, the total in pesos and about in dollars, and the card it pays with. Callout 21: it says exactly what gets shared, here name, phone, and passport number for check-in. Callout 22: it’s over 100 dollars, so it needs Face ID, not just a tap.</p>
+    <p>Fourth, Booked: it lands in Trips with a reference number, and the agent points to one next step: two things to fix before the flight. That’s where the interpreter role picks up.</p>
+  </aside>
+</section>
+
+<!-- 09 Prototype: control and recovery -->
+<section class="slide" data-title="Prototype: control and recovery">
+  <div class="grid flex-1 grid-cols-[320px_1fr] gap-12">
+    <div class="flex flex-col">
+      <p class="kicker">Prototype: control and recovery</p>
+      <h2 class="hl text-[36px]">Control stays with Dani.<span class="dim">Even when the agent says no.</span></h2>
+      <div class="mt-auto">
+        <p class="label">States we built</p>
+        <dl class="mt-3 space-y-3 text-[12.5px]">
+          <div><dt class="font-semibold text-ink">Booking</dt><dd class="mt-1.5 flex flex-wrap gap-1.5"><span class="chip">Options</span><span class="chip">Typing</span><span class="chip">Confirm</span><span class="chip">Face ID</span><span class="chip">Booked</span><span class="chip">Changed</span><span class="chip">Cancelled</span></dd></div>
+          <div><dt class="font-semibold text-ink">Safety</dt><dd class="mt-1.5 flex flex-wrap gap-1.5"><span class="chip">Not offered</span><span class="chip">Refused</span><span class="chip">Can’t help</span></dd></div>
+          <div><dt class="font-semibold text-ink">Setup</dt><dd class="mt-1.5 flex flex-wrap gap-1.5"><span class="chip">Share</span><span class="chip">Checking</span><span class="chip">Approve</span><span class="chip">Skip</span><span class="chip">Undo</span></dd></div>
+        </dl>
+      </div>
+    </div>
+    <div class="grid grid-cols-4 gap-6 self-center">
+      <figure class="phone"><img class="shot" src="./img/verify.jpg" alt="Face ID sheet: MX$23,800, about $1,309, to Casa Roma Suites, with Cancel."><figcaption><b><span class="num">01</span>Verify</b>Over $100, so Face ID with the amount and the hotel. Cancel backs out.</figcaption></figure>
+      <figure class="phone"><img class="shot" src="./img/refuse.jpg" alt="The agent didn’t book Pátio 14 because it asks for a bank transfer deposit, and explains why."><figcaption><b><span class="num">02</span>Refuse</b>A €50 deposit by transfer. It won’t pay that way, says why, and offers two others.</figcaption></figure>
+      <figure class="phone"><img class="shot" src="./img/undo.jpg" alt="Train booking details with how it’s protected, and a cancel prompt showing the €31.50 refund."><figcaption><b><span class="num">03</span>Undo</b>Any booking cancels from Trips, with the refund and card spelled out.</figcaption></figure>
+      <figure class="phone"><img class="shot" src="./img/learn.jpg" alt="Mexico City setup: one item with why, Do it yourself next time steps, Approve and Skip."><figcaption><b><span class="num">04</span>Learn</b>Each fix says why and how to do it yourself. Approve, skip, or undo.</figcaption></figure>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>This slide is about control and recovery. Verify: confirming the hotel opens Face ID with the amount and the hotel’s name. Cancel backs out, and nothing is booked or shared.</p>
+    <p>Refuse: Dani asks to book a table at Pátio 14, which wants a 50 euro deposit by bank transfer. Transfers can’t be reversed, so the agent won’t pay that way. It says why, points to the two other places, and leaves the option to call the restaurant directly.</p>
+    <p>Undo: any booking can be cancelled from Trips. The cancel prompt says exactly how much comes back, and to which card.</p>
+    <p>Learn: Check my setup lists what needs Dani, explains why, and has a Do it yourself next time section with the steps. Nothing changes until Dani approves, and approvals can be undone.</p>
+    <p>On the left are the states we built: booking, safety, and setup states, including a reply for requests it can’t handle, where it says what it can do instead.</p>
+  </aside>
+</section>
+
+<!-- 10 Human flourishing -->
+<section class="slide" data-title="Human flourishing">
+  <p class="kicker">Human flourishing</p>
+  <h2 class="hl text-[44px]">Agency and learning.<span class="dim">Help that doesn’t take over.</span></h2>
+  <div class="mt-7 grid grid-cols-[212px_1fr_1fr_1fr] gap-x-5">
+    <span></span><p class="label pb-2.5">Opportunity</p><p class="label pb-2.5">Risk</p><p class="label pb-2.5 text-accent">Safeguard</p>
+    <div class="border-t border-line py-4"><p class="text-[16px] font-semibold text-ink">Agency and autonomy</p><p class="mt-1 text-[13px] leading-[1.4] text-muted">Does it keep meaningful choice and control?</p></div>
+    <p class="border-t border-line py-4 text-[15px] leading-[1.5] text-body">Dani makes every choice that matters: which option, which card, what’s shared.</p>
+    <p class="border-t border-line py-4 text-[15px] leading-[1.5] text-body">Confirm fatigue: tapping yes without reading. Or a shortlist that quietly narrows the choice.</p>
+    <p class="border-t border-accent py-4 text-[15px] font-medium leading-[1.5] text-ink">Short confirm cards. Face ID only over $100, so it still means something. Anything left out is shown, with why.</p>
+    <div class="border-t border-line py-4"><p class="text-[16px] font-semibold text-ink">Learning and capability</p><p class="mt-1 text-[13px] leading-[1.4] text-muted">Does it build knowledge, judgment, or skills?</p></div>
+    <p class="border-t border-line py-4 text-[15px] leading-[1.5] text-body">Every flag and fix explains why, so Dani learns what a risky listing or setup looks like.</p>
+    <p class="border-t border-line py-4 text-[15px] leading-[1.5] text-body">Dependence: Dani stops judging listings or setting up lines, and can’t travel without the agent.</p>
+    <p class="border-t border-accent py-4 text-[15px] font-medium leading-[1.5] text-ink">Do it yourself next time, on every fix. Bank changes always stay with Dani.</p>
+  </div>
+  <div class="mt-auto grid grid-cols-2 gap-4">
+    <div class="card bg-panel p-5"><p class="label">The tension</p><p class="mt-2 text-[15px] leading-[1.5] text-ink">Filtering scams protects Dani, but every hidden listing is a choice made on Dani’s behalf. So nothing is hidden silently.</p></div>
+    <div class="card p-5"><p class="label">How we’d test it</p><p class="mt-2 text-[15px] leading-[1.5] text-ink">Five nomads, with a teammate answering as the agent from the operator panel. Do people read the confirm card? Can they repeat a fix alone a week later?</p></div>
+  </div>
+  <aside class="notes">
+    <p>We used two flourishing dimensions: agency and autonomy, and learning and capability.</p>
+    <p>For agency, the opportunity is that Dani makes every choice that matters: which option, which card, what’s shared. The risk is confirm fatigue, tapping yes without reading, or a shortlist that quietly narrows the choice. Our safeguards: confirm cards stay short, Face ID only appears over 100 dollars so it still means something, and anything the agent leaves out is shown with the reason.</p>
+    <p>For learning, every flag and fix explains why, so Dani builds judgment about risky listings and setups. The risk is dependence: never learning to judge a listing or set up a line. So every setup fix includes do-it-yourself steps, and bank changes always stay with Dani.</p>
+    <p>The tension we’re holding: filtering scams protects Dani, but every hidden listing is a choice made on Dani’s behalf. That’s why nothing is hidden silently.</p>
+    <p>Next, we’d test with five nomads, with a teammate answering as the agent from the operator panel. We’d watch whether people read the confirm card, and whether they can repeat a fix on their own a week later. Thank you.</p>
+  </aside>
+</section>
+
+<!-- A Appendix: placing the AI (Full mode only) -->
+<section class="slide" data-mode="full" data-title="Appendix A: placing the AI">
+  <p class="kicker">Appendix A</p>
+  <h2 class="hl text-[36px]">Where the AI enters, and where it stops.</h2>
+  <dl class="mt-7 columns-2 gap-12 text-[14px] leading-[1.45]">
+    <div class="mb-4 break-inside-avoid"><dt class="font-semibold text-ink">What activates it?</dt><dd class="mt-0.5 text-body">Dani opens the Agent tab, or taps Check my setup after a profile downloads. Nothing runs in the background.</dd></div>
+    <div class="mb-4 break-inside-avoid"><dt class="font-semibold text-ink">Does it ask, or suggest?</dt><dd class="mt-0.5 text-body">Dani asks. Its one suggestion: after a hotel booking, it points to setup fixes, and Dani decides whether to open them.</dd></div>
+    <div class="mb-4 break-inside-avoid"><dt class="font-semibold text-ink">What information does it use?</dt><dd class="mt-0.5 text-body">The request, trip city and dates, the card on file, and network status. The setup check sees only what Dani shares.</dd></div>
+    <div class="mb-4 break-inside-avoid"><dt class="font-semibold text-ink">Does Dani know what it uses?</dt><dd class="mt-0.5 text-body">Yes. The share screen lists each source, and every confirm card says what gets shared, and with whom.</dd></div>
+    <div class="mb-4 break-inside-avoid"><dt class="font-semibold text-ink">What does it produce?</dt><dd class="mt-0.5 text-body">Shortlists, risk flags with reasons, confirm cards, bookings in Trips, and a setup checklist.</dd></div>
+    <div class="mb-4 break-inside-avoid"><dt class="font-semibold text-ink">What needs approval?</dt><dd class="mt-0.5 text-body">Anything that costs money or shares personal details. Over $100 also needs Face ID.</dd></div>
+    <div class="mb-4 break-inside-avoid"><dt class="font-semibold text-ink">Can Dani edit, reject, or reverse it?</dt><dd class="mt-0.5 text-body">Change or Cancel on every card. Bookings cancel from Trips. Setup approvals can be undone, except a sent Keyholder card.</dd></div>
+    <div class="mb-4 break-inside-avoid"><dt class="font-semibold text-ink">How does it show uncertainty?</dt><dd class="mt-0.5 text-body">Prices are about-amounts in dollars, Wi-Fi speeds come from other nomads’ tests, and ratings show review counts.</dd></div>
+    <div class="mb-4 break-inside-avoid"><dt class="font-semibold text-ink">What if it can’t finish?</dt><dd class="mt-0.5 text-body">It says so, explains why, and offers another way: a different option, or the steps to do it yourself.</dd></div>
+    <div class="mb-4 break-inside-avoid"><dt class="font-semibold text-ink">When does it stop?</dt><dd class="mt-0.5 text-body">After the receipt and one next step. It never chains bookings on its own.</dd></div>
+    <div class="mb-4 break-inside-avoid"><dt class="font-semibold text-ink">How does control return?</dt><dd class="mt-0.5 text-body">The booking sits in Trips, the chat waits, and every thread is saved in history.</dd></div>
+  </dl>
+  <aside class="notes">
+    <p>Backup for questions about Part 4: exactly where the AI enters the experience, what it uses, and how control returns to the user.</p>
+  </aside>
+</section>
+
+<!-- B to E: the Assignment 4 appendix, carried over (Full mode only) -->
+<section class="slide" data-mode="full" data-title="Appendix B: opportunity statements">
+  <p class="kicker">Appendix B &middot; From Assignment 4</p>
+  <h2 class="hl text-[32px]">Opportunity statements and value proposition.</h2>
+  <table class="rmap fills mt-6">
+    <colgroup><col class="w-[19%]"><col class="w-[47%]"><col class="w-[34%]"></colgroup>
+    <thead><tr><th>Area</th><th>Opportunity statement</th><th>How might we</th></tr></thead>
+    <tbody>
+      <tr><td>Network judgment</td><td>Members value <b>competence</b> and participate through <b>VPN and travel-router routines</b>, but experience tension between <b>fear-driven advice</b> and <b>unclear real risk</b>.</td><td>How might we help nomads judge network risk with confidence without reinforcing fear-driven tool buying?</td></tr>
+      <tr><td>Security that moves with you<span class="mt-1.5 block"><span class="chip chip-blue">Selected</span></span></td><td>Members value <b>self-reliance and freedom of movement</b> and participate through <b>second phones, two numbers, and pre-departure prep</b>, but experience tension between <b>security systems that assume a home</b> and <b>lives spent crossing borders</b>.</td><td>How might we help nomads arrive in any country already set up, and recover from anywhere, without assuming a home or hiding where they are?</td></tr>
+      <tr><td>Money that keeps moving</td><td>Members value <b>freedom of movement</b> and participate through <b>multi-bank, multi-app money stacks</b>, but experience tension between <b>automated compliance</b> and <b>travel patterns that look suspicious</b>.</td><td>How might we help nomads keep access to money during a freeze without needing a home bank to fall back on?</td></tr>
+    </tbody>
+  </table>
+  <div class="card mt-auto border-accent-soft bg-accent-wash p-5">
+    <p class="label text-accent">Value proposition</p>
+    <p class="fills mt-2 text-[15px] leading-[1.55] text-body">For <b>digital nomads and remote workers</b> who value <b>self-reliance and freedom of movement</b> but experience <b>security systems that assume a home</b>, NOMAD.OS helps them <b>arrive in any country already set up, and recover from anywhere</b> by <b>downloading one profile per country that sets four layers: network, money, numbers, and a safety net</b>.</p>
+  </div>
+  <aside class="notes">
+    <p>From Assignment 4: our three opportunity areas, written with the assignment template, and the value proposition for the one we chose. This assignment’s agent grows out of the selected area: arrive set up, and recover from anywhere.</p>
+  </aside>
+</section>
+
+<section class="slide" data-mode="full" data-title="Appendix C: evidence table, 1 of 3">
+  <p class="kicker">Appendix C &middot; From Assignment 4</p>
+  <h2 class="hl text-[28px]">Evidence table, 1 of 3 <span class="text-dim">E1 to E9</span></h2>
+  <table class="etab mt-4">
+    <colgroup><col class="w-[5%]"><col class="w-[15%]"><col class="w-[33%]"><col class="w-[23%]"><col class="w-[10%]"><col class="w-[14%]"></colgroup>
+    <thead><tr><th>ID</th><th>Source</th><th>Observation</th><th>Interpretation</th><th>Value</th><th>Tension</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ev">E1</span></td><td>Creator setup guides, Jul and Oct 2026</td><td>Gear-by-gear stacks: a named travel router running WireGuard, multiple eSIMs, priced and weighed per layer.</td><td>The setup itself is a display of competence.</td><td>Preparedness, control</td><td>Preparedness vs. burden and cost</td></tr>
+      <tr><td><span class="ev">E2</span></td><td>Nomad tools blog, Sep 2026</td><td>Argues VPN value depends on the work; light, non-sensitive work on a personal hotspot may not need one.</td><td>Nuance entering a VPN-maximal conversation.</td><td>Practicality</td><td>Fear vs. actual need</td></tr>
+      <tr><td><span class="ev">E3</span></td><td>VPN vendor blog, Aug 2026</td><td>Opens by saying most public Wi-Fi guides sell fear or sell a VPN; calls a VPN often overkill for low-risk use.</td><td>Even sellers distance themselves from fear marketing.</td><td>Calm competence</td><td>Marketing vs. trust</td></tr>
+      <tr><td><span class="ev">E4</span></td><td>VPN vendor blog, two posts, Jul and Aug 2026</td><td>One post says HTTPS protects you from hackers on public Wi-Fi; the other says HTTPS alone won’t keep you safe.</td><td>Guidance is unstable even within one source.</td><td>Clarity</td><td>Conflicting advice</td></tr>
+      <tr><td><span class="ev">E5</span></td><td>VPN blog, Jul 31, 2026; travel blog comments, 2026</td><td>Readers describe buying travel routers so an employer sees a home IP; the vendor warns detection is likely.</td><td>Security gear doubles as concealment.</td><td>Freedom</td><td>Protection vs. concealment</td></tr>
+      <tr><td><span class="ev">E6</span></td><td>Travel blog post and reader comment, Jul 2026</td><td>A perpetual traveler’s phone is stolen; a reader notes phones are grabbed while unlocked in use.</td><td>Risk peaks at the moment of use, not at rest.</td><td>Vigilance</td><td>Convenience vs. safety</td></tr>
+      <tr><td><span class="ev">E7</span></td><td>Phone accessory brand blog, Aug 2026</td><td>Recommends carrying a secondary “burner” phone for risky situations abroad.</td><td>Redundancy extends to whole devices.</td><td>Preparedness</td><td>More gear vs. simplicity</td></tr>
+      <tr><td><span class="ev">E8</span></td><td>Hacker News, Ask HN, Sep 2026 (not travel-specific)</td><td>After a phone theft, the poster can’t reach banking, email, or cloud files. Replies: keep two signed-in devices; keep codes in a password manager.</td><td>One device is a single point of failure; peers prescribe redundancy.</td><td>Self-reliance, peer help</td><td>Security vs. access</td></tr>
+      <tr><td><span class="ev">E9</span></td><td>Q&amp;A help site, Oct 2026 (traveler, not confirmed remote worker)</td><td>Traveler in New Zealand is locked out of Gmail; her recovery number is an Australian line she can’t use.</td><td>Recovery paths assume you’re near home.</td><td>Access</td><td>Mobility vs. verification</td></tr>
+    </tbody>
+  </table>
+  <aside class="notes">
+    <p>From Assignment 4: the evidence behind every E code, with the source, what we observed, our interpretation, the value, and the tension. Items 1 to 9.</p>
+  </aside>
+</section>
+
+<section class="slide" data-mode="full" data-title="Appendix C: evidence table, 2 of 3">
+  <p class="kicker">Appendix C &middot; From Assignment 4</p>
+  <h2 class="hl text-[28px]">Evidence table, 2 of 3 <span class="text-dim">E10 to E18</span></h2>
+  <table class="etab mt-4">
+    <colgroup><col class="w-[5%]"><col class="w-[15%]"><col class="w-[33%]"><col class="w-[23%]"><col class="w-[10%]"><col class="w-[14%]"></colgroup>
+    <thead><tr><th>ID</th><th>Source</th><th>Observation</th><th>Interpretation</th><th>Value</th><th>Tension</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ev">E10</span></td><td>Google Account Help, current page (context)</td><td>Recovery tips: use a familiar device and a location where you usually sign in, like home or work.</td><td>Platform policy encodes a home.</td><td>n/a</td><td>Home assumption</td></tr>
+      <tr><td><span class="ev">E11</span></td><td>Apple Support, current page (context)</td><td>Stolen Device Protection adds biometric checks and a delay when the phone is away from familiar locations.</td><td>The same assumption, in theft protection.</td><td>n/a</td><td>Home assumption</td></tr>
+      <tr><td><span class="ev">E12</span></td><td>r/digitalnomad thread, Apr 22, 2026 (also summarized in May 2026)</td><td>About $68k held by a fintech app for nearly 6 months; 230+ comments. Replies: it isn’t a bank, keep a real one; regulator complaints released funds. Update: money returned late May.</td><td>Failure stories become community rules.</td><td>Collective knowledge</td><td>Convenience vs. control of money</td></tr>
+      <tr><td><span class="ev">E13</span></td><td>Expat VPN site, Oct 2026; nomad tax guide, Jun 2026</td><td>One says a dedicated-IP VPN ends repeated selfie checks; the other says VPNs can trigger fraud flags and freezes.</td><td>The same tool is sold as cure and blamed as cause.</td><td>Access</td><td>Conflicting advice</td></tr>
+      <tr><td><span class="ev">E14</span></td><td>Expat phone setup guide, May 2026</td><td>Banks and government portals send codes only to real US numbers, mostly not VoIP; recommends a cheap carrier line kept active from abroad.</td><td>Nomads rebuild a “home” number.</td><td>Continuity</td><td>Freedom vs. home dependence</td></tr>
+      <tr><td><span class="ev">E15</span></td><td>Nomad blog, Apr 2026 (8 years nomadic)</td><td>Calls the password manager the keystone; keeps a printed emergency kit sealed with a trusted person at home; warns against carrying the only copy.</td><td>Recovery depends on people and place.</td><td>Care, preparedness</td><td>Freedom vs. home dependence</td></tr>
+      <tr><td><span class="ev">E16</span></td><td>r/digitalnomad, ~Jun 2026, 70+ comments</td><td>PSA that the phone is the key to everything; replies advise storing IMEI and carrier details in a password manager; one reply also locked out of Google.</td><td>The phone is a single point of failure, and the community knows it.</td><td>Preparedness</td><td>Security vs. access</td></tr>
+      <tr><td><span class="ev">E17</span></td><td>r/digitalnomad, ~Aug 2026, 40+ comments</td><td>Thread on carrying a secondary phone; the top answer adopted it after a phone snatch in Barcelona.</td><td>Redundancy is learned through failure.</td><td>Preparedness</td><td>More gear vs. simplicity</td></tr>
+      <tr><td><span class="ev">E18</span></td><td>r/digitalnomad, May to Oct 2026, three threads</td><td>Full-time travel “ruined” a poster’s number; replies split life across two numbers; the keep-your-US-number question recurs and draws weary replies.</td><td>The home number is infrastructure nomads must maintain from afar.</td><td>Continuity</td><td>Freedom vs. home dependence</td></tr>
+    </tbody>
+  </table>
+  <aside class="notes">
+    <p>Items 10 to 18, including the two platform policies that assume a home, and the threads about keeping a home number alive for codes.</p>
+  </aside>
+</section>
+
+<section class="slide" data-mode="full" data-title="Appendix C: evidence table, 3 of 3">
+  <p class="kicker">Appendix C &middot; From Assignment 4</p>
+  <h2 class="hl text-[28px]">Evidence table, 3 of 3 <span class="text-dim">E19 to E27</span></h2>
+  <table class="etab mt-4">
+    <colgroup><col class="w-[5%]"><col class="w-[15%]"><col class="w-[33%]"><col class="w-[23%]"><col class="w-[10%]"><col class="w-[14%]"></colgroup>
+    <thead><tr><th>ID</th><th>Source</th><th>Observation</th><th>Interpretation</th><th>Value</th><th>Tension</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ev">E19</span></td><td>r/digitalnomad, ~May 2026, 160+ comments</td><td>A newcomer about to quit and travel is told to carry two phones and absolutely keep a home number for bank and government codes.</td><td>Status is passed down as rules for newcomers.</td><td>Belonging, care</td><td>Freedom vs. home dependence</td></tr>
+      <tr><td><span class="ev">E20</span></td><td>r/digitalnomad, Apr to Aug 2026, 120 to 390+ comments</td><td>Stealth-nomading threads reference the subreddit wiki setup (travel router, tunnel home, kill switch); a reply says IT reads a foreign login as stolen credentials.</td><td>Concealment is organized and documented, not fringe; corporate security also assumes a home.</td><td>Freedom, control</td><td>Protection vs. concealment</td></tr>
+      <tr><td><span class="ev">E21</span></td><td>r/digitalnomad, ~May 2026, 10 to 20+ comments</td><td>Newcomers ask whether a $10k transfer will trigger a freeze, and report transfers held for extra security checks.</td><td>Failure stories shape behavior before failure happens.</td><td>Control of money</td><td>Convenience vs. control</td></tr>
+      <tr><td><span class="ev">E22</span></td><td>X, Sep 21, 2026, creator (~23.5k followers), 367 likes</td><td>Phone stolen by motorbike thieves in Asunción; cards added to Apple Pay and thousands taken; 2FA tied to the stolen phone and a Spanish SIM, so he flew to Spain to recover the number.</td><td>Recovery can require physically returning to a “home” country.</td><td>Self-reliance</td><td>Freedom vs. home dependence</td></tr>
+      <tr><td><span class="ev">E23</span></td><td>X, Oct 5 to 8, 2026, three small accounts</td><td>One says get your cell number out of 2FA and use Google Voice; one says banks may refuse Voice numbers, so test each bank; one says keep the home SIM on just for codes.</td><td>Advice conflicts in the same week, with no shared answer.</td><td>Clarity</td><td>Conflicting advice</td></tr>
+      <tr><td><span class="ev">E24</span></td><td>X, Oct 6, 2026, developer creator (~400k)</td><td>Praises a GL.iNet travel router for making travel easier; a VPN is optional.</td><td>The router is also a mainstream convenience gadget, not only a security or concealment tool.</td><td>Convenience</td><td>(Complicates the burden tension)</td></tr>
+      <tr><td><span class="ev">E25</span></td><td>X, Oct 1, 2026, small nomad account</td><td>Describes briefing an eSIM provider on 2FA, eSIM, and the financial risks of a stolen phone.</td><td>The market is starting to notice the same gap.</td><td>n/a</td><td>Competitive signal</td></tr>
+      <tr><td><span class="ev">E26</span></td><td>r/digitalnomad, ~May 27, 2026, 38 upvotes, 39 comments</td><td>A work account was frozen after using a consumer VPN while traveling; replies say commercial VPNs are easy to detect and suggest self-hosting at a parent’s house.</td><td>The security tool triggers the lockout, and the fix routes back through home.</td><td>Access</td><td>Security vs. access</td></tr>
+      <tr><td><span class="ev">E27</span></td><td>r/GlInet, ~Apr 8, 2026, 13 comments (verified via a listing)</td><td>A newcomer offers to pay for help setting up a travel router to present a home IP; replies cover home-side servers, 2FA, and disabling Wi-Fi on work laptops.</td><td>Concealment setups are hard enough that newcomers pay for help.</td><td>Freedom</td><td>Protection vs. concealment</td></tr>
+    </tbody>
+  </table>
+  <aside class="notes">
+    <p>Items 19 to 27, including E22, the stolen phone in Asunción, and E23, three conflicting answers in one week.</p>
+  </aside>
+</section>
+
+<section class="slide" data-mode="full" data-title="Appendix D: traceability">
+  <p class="kicker">Appendix D &middot; From Assignment 4</p>
+  <h2 class="hl text-[32px]">Research-to-design traceability.</h2>
+  <table class="rmap tight mt-5 text-[13.5px]">
+    <colgroup><col class="w-[15%]"><col class="w-[41%]"><col class="w-[44%]"></colgroup>
+    <thead><tr><th>Evidence</th><th>What we observed or concluded</th><th>Design response</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ev">E10</span> <span class="ev">E11</span> <span class="ev">E22</span></td><td>Recovery keys off home; one nomad flew home to get a number back.</td><td>Safety net: Break Glass from any browser; a Keyholder replaces the familiar-place check. (S6, S7)</td></tr>
+      <tr><td><span class="ev">E13</span> <span class="ev">E23</span> <span class="ev">E26</span></td><td>The right answer depends on the country and the bank.</td><td>Country profiles, with dated reports for each country. (S1, S2)</td></tr>
+      <tr><td><span class="ev">E2</span> <span class="ev">E3</span> <span class="ev">E4</span></td><td>VPNs: needed versus overkill, and fear-driven advice.</td><td>Network layer: VPN on only for untrusted Wi-Fi. (S3)</td></tr>
+      <tr><td><span class="ev">E13</span> <span class="ev">E26</span></td><td>VPNs trigger bank and work-account freezes.</td><td>Network layer: apps that flag VPNs go direct. (S3)</td></tr>
+      <tr><td><span class="ev">E6</span> <span class="ev">E22</span></td><td>Thieves add cards to wallets and move money fast.</td><td>Money layer: cards locked to trip dates and places. (S4)</td></tr>
+      <tr><td><span class="ev">E12</span> <span class="ev">E21</span></td><td>Fintech freezes strand money for months.</td><td>Money layer: a backup way to pay and a freeze plan. (S4)</td></tr>
+      <tr><td><span class="ev">E14</span> <span class="ev">E18</span> <span class="ev">E19</span></td><td>Nomads keep a home number alive for codes.</td><td>Numbers layer: home line for codes, local eSIM for data. (S5)</td></tr>
+      <tr><td><span class="ev">E8</span> <span class="ev">E23</span></td><td>Advice splits on SMS versus other code methods.</td><td>Numbers layer: codes that can leave SMS move to an authenticator. (S5)</td></tr>
+      <tr><td><span class="ev">E15</span> <span class="ev">E17</span></td><td>Nomads leave kits with family and add backups after a theft.</td><td>Safety net: a Keyholder with a split key. (S6)</td></tr>
+      <tr><td><span class="ev">E5</span> <span class="ev">E20</span></td><td>Security gear is used to hide location from employers.</td><td>Principle: encrypt, don’t disguise. The VPN exits where you are. (Principles)</td></tr>
+    </tbody>
+  </table>
+  <aside class="notes">
+    <p>From Assignment 4: how each finding maps to a design response, and to the screen in the prototype that carries it.</p>
+  </aside>
+</section>
+
+<section class="slide" data-mode="full" data-title="Appendix E: evidence sources">
+  <p class="kicker">Appendix E &middot; From Assignment 4</p>
+  <h2 class="hl text-[32px]">Sources for every evidence item.</h2>
+  <ol class="mt-5 columns-2 gap-x-10 text-[11.5px] leading-[1.4] text-body [overflow-wrap:anywhere]">
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E1</span><span>dev.to/notifyshow/the-ultimate-digital-nomad-setup-minimalist-tech-and-working-from-anywhere-179k; nomadstoolslab.com/digital-nomad-setup-guide-2026</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E2</span><span>ontheroadtools.com/vpn-for-digital-nomads-do-you-actually-need-one</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E3</span><span>windscribe.com/blog/how-to-use-public-wi-fi-safely</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E4</span><span>protonvpn.com/blog/vpn-myths; protonvpn.com/blog/public-wifi-and-https</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E5</span><span>vpn.pro/blog/can-your-employer-detect-that-youre-using-a-vpn-while-working-remotely; indietraveller.co/best-travel-vpn (comments)</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E6</span><span>johnnyjet.com/dont-fall-for-this-new-phone-theft-scam-targeting-tourists</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E7</span><span>phoneloops.com/blogs/posts/phone-security-while-traveling-europe-prevent-theft-stay-safe-in-2026</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E8</span><span>news.ycombinator.com/item?id=49742976</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E9</span><span>justanswer.com/email/jeery-locked-gmail-account-currently-overseas-none.html</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E10</span><span>support.google.com/accounts/answer/7299973</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E11</span><span>support.apple.com/120340</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E12</span><span>reddit.com/r/digitalnomad/comments/1ssjy5m; summary at moveandmoney.com/blog-fintech-account-frozen-2026</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E13</span><span>safeexpatvpn.com/revolut-account-restricted-abroad; nomadtaxguide.com/blog/digital-nomad-banking-guide</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E14</span><span>expatretireguide.com/money/phone-setup</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E15</span><span>tonydehnke.com/blog/digital-nomad-backup-tools</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E16</span><span>reddit.com/r/digitalnomad/comments/1uh3o4f</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E17</span><span>reddit.com/r/digitalnomad/comments/1vwj8pg</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E18</span><span>reddit.com/r/digitalnomad/comments/1w75mkf; 1wyr9jc; 1t8q1ig</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E19</span><span>reddit.com/r/digitalnomad/comments/1ti45hs</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E20</span><span>reddit.com/r/digitalnomad/comments/1vzmfww; 1tr5hou; 1slwlzs</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E21</span><span>reddit.com/r/digitalnomad/comments/1tqfsq4; 1tlf6pc</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E22</span><span>x.com/hispanicnomad/status/2102094776187134436</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E23</span><span>x.com/GabeLenz/status/2108298536093896991; x.com/StephenZhou1004/status/2108115835294216253; x.com/nexkit2026/status/2107078468936908918</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E24</span><span>x.com/theo/status/2107590392128704776</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E25</span><span>x.com/baddigitalnomad/status/2105673102768419026</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E26</span><span>reddit.com/r/digitalnomad/comments/1tp3a7b</span></li>
+    <li class="mb-1.5 flex break-inside-avoid gap-2"><span class="ev w-[38px] shrink-0 self-start text-center">E27</span><span>reddit.com/r/GlInet/comments/1sfksl9</span></li>
+  </ol>
+  <p class="mt-auto pt-4 text-[11.5px] leading-[1.45] text-muted">Reddit items come from Google listings filtered to the study window, dates estimated from post IDs; X posts were opened and checked by hand. Dates are publication or comment dates where shown; otherwise estimated from the page’s indexed age and given to the month. Policy pages were read in October 2026. Usernames are omitted throughout.</p>
+  <aside class="notes">
+    <p>From Assignment 4: the link for every evidence item, and how we collected and dated them.</p>
+  </aside>
+</section>
+
+<!-- F Appendix: references (Full mode only) -->
+<section class="slide" data-mode="full" data-title="Appendix F: references">
+  <p class="kicker">Appendix F</p>
+  <h2 class="hl text-[36px]">References.</h2>
+  <ol class="mt-7 space-y-3.5 text-[14px] leading-[1.45]">
+    <li class="grid grid-cols-[1fr_270px] gap-8"><p class="text-ink">Airalo. (2026, June 2). <i>Airalo surpasses 30 million users</i> [Press release]. https://www.airalo.com/about-us/press-releases/airalo-surpasses-30-million-users</p><p class="text-muted">Existing product analysis</p></li>
+    <li class="grid grid-cols-[1fr_270px] gap-8"><p class="text-ink">Amershi, S., Weld, D., Vorvoreanu, M., Fourney, A., Nushi, B., Collisson, P., Suh, J., Iqbal, S., Bennett, P. N., Inkpen, K., Teevan, J., Kikin-Gil, R., &amp; Horvitz, E. (2019). Guidelines for human-AI interaction. <i>Proceedings of CHI 2019</i>. https://doi.org/10.1145/3290605.3300233</p><p class="text-muted">Explain, confirm, and support correction</p></li>
+    <li class="grid grid-cols-[1fr_270px] gap-8"><p class="text-ink">Google PAIR. (2021). <i>People + AI guidebook</i>. https://pair.withgoogle.com/guidebook</p><p class="text-muted">Trust, feedback, and errors</p></li>
+    <li class="grid grid-cols-[1fr_270px] gap-8"><p class="text-ink">OpenAI. (2025, January 23). <i>Introducing Operator</i>. https://openai.com/blog/introducing-operator</p><p class="text-muted">Precedent: an agent that asks before it buys</p></li>
+    <li class="grid grid-cols-[1fr_270px] gap-8"><p class="text-ink">Parasuraman, R., Sheridan, T. B., &amp; Wickens, C. D. (2000). A model for types and levels of human interaction with automation. <i>IEEE Transactions on Systems, Man, and Cybernetics, Part A, 30</i>(3), 286-297. https://doi.org/10.1109/3468.844354</p><p class="text-muted">How much the agent does on its own</p></li>
+    <li class="grid grid-cols-[1fr_270px] gap-8"><p class="text-ink">Shneiderman, B. (2022). <i>Human-centered AI</i>. Oxford University Press.</p><p class="text-muted">High automation with high human control</p></li>
+    <li class="grid grid-cols-[1fr_270px] gap-8"><p class="text-ink">Federal Trade Commission. (n.d.). <i>Avoid scams when you travel</i>. Consumer Advice. https://consumer.ftc.gov/articles/avoid-scams-when-you-travel</p><p class="text-muted">Wire transfers as a scam signal</p></li>
+    <li class="grid grid-cols-[1fr_270px] gap-8"><p class="text-ink">NOMAD.OS team. (2026). <i>Assignment 4 research: 27 public posts on how nomads stay secure, E1 to E27</i>. IDSN 523.</p><p class="text-muted">Evidence codes on slide 3, in full in Appendix C</p></li>
+  </ol>
+  <aside class="notes">
+    <p>Products, precedents, and research we used. The E codes on slide 3 point to our Assignment 4 evidence table in Appendix C, with a link for each item in Appendix E.</p>
+  </aside>
+</section>
+
+</div>
+</main>
+
+<nav class="controls" id="controls" aria-label="Deck controls">
+  <button id="prev" type="button" aria-label="Previous slide"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+  <span class="count" id="count">1 / 10</span>
+  <button id="next" type="button" aria-label="Next slide"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+  <span class="sep" aria-hidden="true"></span>
+  <button id="mode" type="button" aria-pressed="false" title="M">Talk: 10 slides</button>
+  <button id="notes-btn" type="button" aria-pressed="false" title="N">Notes</button>
+  <button id="presenter" type="button" title="P">Presenter</button>
+  <span class="sep" aria-hidden="true"></span>
+  <button id="print" type="button">Print</button>
+  <button id="print-notes" type="button">Print with notes</button>
+</nav>
+<aside class="notes-panel" id="notes-panel" hidden aria-label="Speaker notes"><p class="label">Speaker notes</p><div class="notes-body"></div></aside>
+<p class="live sr-only" id="live" aria-live="polite"></p>
+<div id="print-root"></div>
+<script type="module" src="./deck.js"></script>
+</body>
+</html>

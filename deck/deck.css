@@ -1,0 +1,185 @@
+@import "tailwindcss" source("./");
+@source not "./dist";
+
+/* Geist and Geist Mono, latin only, so the built file stays small and works offline. */
+@font-face {
+  font-family: "Geist Variable";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url("../node_modules/@fontsource-variable/geist/files/geist-latin-wght-normal.woff2") format("woff2-variations");
+}
+@font-face {
+  font-family: "Geist Mono Variable";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url("../node_modules/@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2") format("woff2-variations");
+}
+
+/* The NOMAD.OS brand system from earlier decks: ink, greys, and one blue. */
+@theme {
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, monospace;
+  --color-ink: #171717;
+  --color-night: #0a0a0a;
+  --color-body: #525252;
+  --color-muted: #737373;
+  --color-dim: #8f8f8f; /* second headline line: 3.2:1 on white, enough for large text */
+  --color-faint: #a3a3a3;
+  --color-line: #e5e5e5;
+  --color-panel: #fafafa;
+  --color-accent: #2563eb;
+  --color-accent-deep: #1d4ed8;
+  --color-accent-soft: #dbeafe;
+  --color-accent-wash: #eff5ff;
+}
+
+@layer base {
+  html, body { height: 100%; margin: 0; }
+  body { background: #f5f5f5; color: var(--color-ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; overflow: hidden; }
+  .slide :is(p, li, dd, figcaption) { text-wrap: pretty; } /* no one-word last lines; nowrap pieces still win */
+}
+
+@layer components {
+  /* ---------- slide canvas: 1280 x 720, scaled to fit ---------- */
+  /* Centered by position, not grid: a grid start-aligns the 1280px box in narrower windows, so it drifted right. */
+  .stage { position: fixed; inset: 0; overflow: hidden; }
+  .deck { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; transform-origin: center; }
+  .slide {
+    position: absolute; inset: 0; display: none; flex-direction: column; overflow: hidden;
+    padding: 56px 64px 72px; background: #fff; color: var(--color-ink); border-radius: 4px;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 18px 40px -20px rgb(0 0 0 / 0.25);
+  }
+  .slide.is-active { display: flex; }
+  .slide > .notes { display: none; }
+  .slide.ink { background: var(--color-night); color: #fff; }
+
+  /* ---------- type ---------- */
+  .kicker { display: block; margin-bottom: 18px; font: 500 11.5px/1.2 var(--font-mono); letter-spacing: 0.22em; text-transform: uppercase; color: var(--color-accent); }
+  .hl { font-weight: 700; letter-spacing: -0.035em; line-height: 1.02; text-wrap: balance; }
+  .hl .dim { display: block; color: var(--color-dim); }
+  .lede { color: var(--color-accent); font-weight: 500; font-size: 21px; line-height: 1.45; letter-spacing: -0.005em; }
+  .meta { font: 400 12.5px/1.4 var(--font-mono); letter-spacing: 0.02em; color: var(--color-muted); }
+  .label { font: 500 11px/1.2 var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); }
+  .num { font: 500 13px/1 var(--font-mono); letter-spacing: 0.04em; color: var(--color-accent); }
+  .ev { display: inline-block; padding: 1px 6px; border: 1px solid var(--color-line); border-radius: 4px; background: var(--color-panel); font: 500 11px/1.4 var(--font-mono); color: var(--color-muted); white-space: nowrap; }
+
+  /* ---------- pieces ---------- */
+  .card { border: 1px solid var(--color-line); border-radius: 6px; background: #fff; }
+  .foot { position: absolute; left: 64px; right: 64px; bottom: 26px; display: flex; justify-content: space-between; align-items: baseline; z-index: 2; }
+  .foot span:first-child { font: 500 10.5px var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-faint); }
+  .foot .n { font: 500 10.5px var(--font-mono); letter-spacing: 0.12em; color: var(--color-accent); }
+  .ink .foot span:first-child { color: var(--color-muted); }
+  .co { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 99px; background: var(--color-accent); color: #fff; font: 600 10.5px var(--font-mono); vertical-align: 1px; }
+  /* Phone screenshots: the corners are clipped to the bezel's radius, 60px at full size. */
+  .shot { display: block; width: 196px; aspect-ratio: 390 / 801; object-fit: cover; border-radius: 30px; box-shadow: 0 22px 36px -22px rgb(10 15 30 / 0.55); }
+
+  /* ---------- content pieces ---------- */
+  .ic { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .tile { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 9px; background: var(--color-accent-wash); color: var(--color-accent); }
+  .chip { display: inline-flex; align-items: center; gap: 5px; padding: 0 8px; border: 1px solid var(--color-line); border-radius: 99px; background: #fff; font: 500 11.5px/20px var(--font-sans); color: var(--color-body); white-space: nowrap; }
+  .chip-blue { border-color: #bfd4fe; background: var(--color-accent-wash); color: var(--color-accent-deep); }
+  .card-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--color-ink); }
+  .card-text { margin-top: 6px; font-size: 15px; line-height: 1.5; color: var(--color-body); }
+  /* The filled-in parts of the opportunity statement template. */
+  .fill { color: var(--color-ink); font-weight: 600; background: linear-gradient(transparent 64%, var(--color-accent-soft) 64%); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+
+  /* Airalo's flow: steps joined by small chevrons */
+  .steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; }
+  .steps > li { position: relative; display: flex; align-items: flex-start; gap: 12px; }
+  .steps > li:not(:last-child)::after { content: ""; position: absolute; top: 14px; right: -15px; width: 7px; height: 7px; border-top: 1.5px solid #c4c4c4; border-right: 1.5px solid #c4c4c4; transform: rotate(45deg); }
+
+  /* Responsibility map */
+  .rmap { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px; line-height: 1.42; }
+  .rmap th { padding: 0 12px 9px; text-align: left; font: 500 10.5px/1.2 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-muted); }
+  .rmap td { padding: 10px 12px; border-top: 1px solid var(--color-line); vertical-align: top; color: var(--color-body); }
+  .rmap th:first-child, .rmap td:first-child { padding-left: 0; }
+  .rmap td:first-child { font-weight: 600; color: var(--color-ink); }
+  .rmap td.shared { background: var(--color-accent-wash); color: var(--color-accent-deep); }
+  .rmap th.shared { color: var(--color-accent); }
+
+  /* Appendix tables carried over from Assignment 4 */
+  .fills b { font-weight: 600; color: var(--color-ink); }
+  .rmap.tight td { padding-top: 7px; padding-bottom: 7px; }
+  .etab { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; line-height: 1.36; }
+  .etab th { padding: 0 10px 7px 0; text-align: left; font: 500 10px/1.2 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-muted); }
+  .etab td { padding: 5px 10px 5px 0; border-top: 1px solid var(--color-line); vertical-align: top; color: var(--color-body); }
+  .etab td:nth-child(2) { color: var(--color-muted); }
+  .etab td:nth-child(3) { color: var(--color-ink); }
+
+  /* Interaction flow: eight steps on one line, the decision filled in */
+  .flow { position: relative; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 16px; }
+  /* The line runs from the first dot's center to the last one's: each column is (100% - 7 gaps) / 8 wide. */
+  .flow::before { content: ""; position: absolute; top: 19px; left: 19px; right: calc((100% - 112px) / 8 - 19px); border-top: 1px solid var(--color-line); }
+  .flow .dot { position: relative; display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid #d4d4d4; border-radius: 99px; background: #fff; color: var(--color-ink); }
+  .flow .key .dot { border-color: var(--color-accent); background: var(--color-accent); color: #fff; box-shadow: 0 0 0 5px var(--color-accent-soft); }
+  .flow .step-t { margin-top: 4px; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--color-ink); }
+  .flow .key .step-t { color: var(--color-accent); }
+  .flow .step-d { margin-top: 6px; font-size: 13.5px; line-height: 1.45; color: var(--color-body); }
+  .flow .step-e { margin-top: 10px; padding: 6px 8px; border-radius: 6px; background: var(--color-panel); font: 400 11px/1.4 var(--font-mono); color: var(--color-muted); }
+  .flow .key .step-e { background: var(--color-accent-wash); color: var(--color-accent-deep); }
+
+  /* Prototype phones with captions */
+  .phone .shot { width: 100%; border-radius: 27px; }
+  .phone figcaption { margin-top: 16px; font-size: 13.5px; line-height: 1.45; color: var(--color-body); }
+  .phone figcaption b { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; font-size: 15px; font-weight: 600; color: var(--color-ink); }
+
+  /* ---------- title slide ---------- */
+  .glow { position: absolute; inset: -120px -160px -120px 38%; background: radial-gradient(closest-side, rgb(37 99 235 / 0.5), rgb(37 99 235 / 0.1) 55%, rgb(37 99 235 / 0)); filter: blur(18px); pointer-events: none; }
+  .title-map { position: absolute; left: 632px; top: 40px; width: 800px; aspect-ratio: 116 / 92; pointer-events: none;
+    -webkit-mask-image: radial-gradient(ellipse 60% 64% at 43% 47%, #000 52%, transparent 100%);
+    mask-image: radial-gradient(ellipse 60% 64% at 43% 47%, #000 52%, transparent 100%); }
+  .title-map svg { display: block; width: 100%; height: 100%; }
+  .title-map path { fill: none; stroke-linecap: round; stroke-width: 0.44; }
+  .title-map .map-land { stroke: rgb(255 255 255 / 0.24); }
+  .title-map .map-from { stroke: rgb(255 255 255 / 0.55); }
+  .title-map .map-to { stroke: rgb(96 165 250 / 0.85); }
+  .title-map .pin-from { fill: #fff; }
+  .title-map .pin-to { fill: #3b82f6; stroke: #fff; stroke-width: 0.22; }
+  .title-map .pin-ping { fill: #60a5fa; opacity: 0.45; transform-box: fill-box; transform-origin: center; }
+  .pin-label { position: absolute; transform: translate(14px, -50%); white-space: nowrap; font: 500 11px/1.35 var(--font-mono); letter-spacing: 0.06em; color: var(--color-faint); text-shadow: 0 0 3px var(--color-night), 0 0 8px var(--color-night), 0 0 14px var(--color-night); }
+  .pin-label b { display: block; font-weight: 600; color: #fff; letter-spacing: 0.14em; text-transform: uppercase; }
+  .pin-label.left { transform: translate(calc(-100% - 14px), -50%); text-align: right; }
+
+  /* ---------- controls, notes, presenter ---------- */
+  .controls { position: fixed; right: 16px; bottom: 16px; z-index: 20; display: flex; align-items: center; gap: 2px; padding: 5px; border: 1px solid var(--color-line); border-radius: 10px; background: #fff; box-shadow: 0 8px 24px -8px rgb(16 24 40 / 0.22); transition: opacity 200ms; }
+  .controls.is-idle { opacity: 0; pointer-events: none; }
+  .controls button { padding: 7px 10px; border-radius: 6px; font: 500 13px var(--font-sans); color: var(--color-ink); cursor: pointer; }
+  .controls button:hover { background: var(--color-panel); }
+  .controls button[aria-pressed="true"] { background: var(--color-accent-soft); color: var(--color-accent-deep); }
+  .controls button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+  .controls .count { min-width: 56px; text-align: center; font: 400 12.5px var(--font-mono); color: var(--color-muted); }
+  .controls .sep { width: 1px; height: 20px; margin: 0 4px; background: var(--color-line); }
+  .notes-panel { position: fixed; left: 16px; bottom: 16px; z-index: 20; width: min(560px, calc(100vw - 460px)); max-height: 46vh; overflow: auto; padding: 14px 16px; border: 1px solid var(--color-line); border-radius: 10px; background: #fff; box-shadow: 0 8px 24px -8px rgb(16 24 40 / 0.22); font-size: 14.5px; line-height: 1.55; }
+  .notes-panel p + p { margin-top: 8px; }
+  .notes-panel .label { margin-bottom: 6px; }
+  #print-root { display: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .slide.is-active { animation: slide-in 220ms ease-out; }
+  @keyframes slide-in { from { opacity: 0; } to { opacity: 1; } }
+  .title-map .pin-ping { animation: ping 2.4s ease-out infinite; }
+  @keyframes ping { from { transform: scale(1); opacity: 0.5; } to { transform: scale(3.4); opacity: 0; } }
+}
+
+/* ---------- print: one slide per page, or slide plus speaker notes ---------- */
+@page { size: 1280px 720px; margin: 0; }
+@media print {
+  html, body { height: auto; overflow: visible; background: #fff; }
+  .stage, .controls, .notes-panel, .live { display: none !important; }
+  #print-root { display: block; }
+  .sheet { position: relative; width: 1280px; height: 720px; overflow: hidden; break-after: page; page-break-after: always; }
+  .sheet:last-child { break-after: auto; page-break-after: auto; }
+  .sheet .slide { display: flex; position: relative; width: 1280px; height: 720px; border-radius: 0; box-shadow: none; animation: none; }
+  .sheet .pin-ping { display: none; }
+  /* Blurred shadows print as solid boxes in Preview: labels get a plain backing, phones lose their shadow. */
+  .sheet .pin-label { text-shadow: none; padding: 2px 5px; border-radius: 3px; background: var(--color-night); }
+  .sheet .shot { box-shadow: none; }
+  .with-notes .sheet { height: 1000px; }
+  .sheet-notes { height: 280px; padding: 26px 64px; border-top: 1px solid var(--color-line); background: #fff; color: var(--color-ink); font-size: 14px; line-height: 1.55; overflow: hidden; }
+  .sheet-notes .label { margin-bottom: 8px; color: var(--color-accent); }
+  .sheet-notes p + p { margin-top: 6px; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

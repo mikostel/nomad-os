@@ -7,7 +7,12 @@
     "build:single": "vite build --mode single --outDir dist-single",
     "preview": "vite preview",
     "shots": "node scripts/screenshots.mjs",
-    "map": "node scripts/build-route-map.mjs"
+    "map": "node scripts/build-route-map.mjs",
+    "deck": "vite --config deck/vite.config.js",
+    "deck:build": "vite build --config deck/vite.config.js",
+    "deck:map": "node scripts/build-deck-map.mjs",
+    "deck:shots": "node scripts/deck-shots.mjs",
+    "deck:check": "node scripts/check-deck.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

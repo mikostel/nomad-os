@@ -51,6 +51,20 @@ npm run shots
 
 Captures every screen and state at 1440x900 with Playwright, checks each one for text that overflows or gets cut off, and writes `screenshots/REPORT.md`. Add a name to run only matching states (`npm run shots -- agent`), `--dark` for the dark theme (saved to `screenshots/dark/`), or `--size=1280x720` for a projector. The first time, run `npx playwright install chromium`.
 
+## Assignment 5 deck
+
+The presentation lives in `deck/`: plain HTML and Tailwind CSS 4, with speaker notes on every slide. The built file is `deck/dist/nomad-os-a5-deck.html`, with fonts and images inside, so it opens offline.
+
+```bash
+npm run deck          # live preview at localhost:5174
+npm run deck:build    # writes deck/dist/nomad-os-a5-deck.html
+npm run deck:check    # screenshots every slide, checks overflow, writes the PDFs
+```
+
+- Open the built file in Chrome. Arrow keys or Space move between slides. N shows notes, P opens the presenter view (current and next slide, notes, and a timer), F goes full screen, and M switches between Talk (10 slides) and Full (adds the appendix: where the AI enters, the Assignment 4 framing, evidence table, traceability, and sources, then references).
+- Print and Print with notes, in the bar at the bottom right, print every slide in the current mode. Choose Save as PDF. `npm run deck:check` also writes both PDFs of the full deck, appendix included, to `deck/dist/`. For the 10 slides alone, print from Talk mode.
+- The phone screens come from the prototype itself. `npm run deck:shots` recaptures them into `deck/img/` after a screen changes, and `npm run deck:map` redraws the dotted map on the title slide.
+
 ## Project layout
 
 ```
@@ -64,7 +78,9 @@ src/
   lib/store.jsx       app state, navigation, and selectors
   screens/trip/       phone screens
   screens/loss/       Break Glass browser and Keyholder phone
+deck/                 Assignment 5 slides (index.html, deck.css, deck.js), built to deck/dist/
 scripts/screenshots.mjs   Playwright screenshots and overflow checks
+scripts/check-deck.mjs    deck screenshots, overflow checks, and PDFs
 ```
 
 ## shadcn/ui and Base UI
