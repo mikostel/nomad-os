@@ -38,7 +38,7 @@ function applyMode() {
   list = all.filter((s) => (s.dataset.mode || "talk full").split(" ").includes(mode))
   list.forEach((s, k) => { s.querySelector(".foot .n").textContent = String(k + 1).padStart(2, "0") })
   all.forEach((s) => s.setAttribute("aria-label", list.includes(s) ? `Slide ${list.indexOf(s) + 1} of ${list.length}: ${titleOf(s)}` : titleOf(s)))
-  modeBtn.textContent = mode === "talk" ? "Talk: 10 slides" : "Full: with appendix"
+  modeBtn.textContent = mode === "talk" ? `Talk: ${list.length} slides` : "Full: with appendix"
   modeBtn.setAttribute("aria-pressed", String(mode === "full"))
 }
 

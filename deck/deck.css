@@ -33,6 +33,10 @@
   --color-accent-deep: #1d4ed8;
   --color-accent-soft: #dbeafe;
   --color-accent-wash: #eff5ff;
+  /* Risk and friction, the same amber the app uses for its risk cards */
+  --color-warn: #b45309;
+  --color-warn-line: #f4d18f;
+  --color-warn-wash: #fff8eb;
 }
 
 @layer base {
@@ -71,26 +75,74 @@
   .foot span:first-child { font: 500 10.5px var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-faint); }
   .foot .n { font: 500 10.5px var(--font-mono); letter-spacing: 0.12em; color: var(--color-accent); }
   .ink .foot span:first-child { color: var(--color-muted); }
-  .co { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 99px; background: var(--color-accent); color: #fff; font: 600 10.5px var(--font-mono); vertical-align: 1px; }
   /* Phone screenshots: the corners are clipped to the bezel's radius, 60px at full size. */
   .shot { display: block; width: 196px; aspect-ratio: 390 / 801; object-fit: cover; border-radius: 30px; box-shadow: 0 22px 36px -22px rgb(10 15 30 / 0.55); }
 
   /* ---------- content pieces ---------- */
   .ic { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
-  .tile { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 9px; background: var(--color-accent-wash); color: var(--color-accent); }
   .chip { display: inline-flex; align-items: center; gap: 5px; padding: 0 8px; border: 1px solid var(--color-line); border-radius: 99px; background: #fff; font: 500 11.5px/20px var(--font-sans); color: var(--color-body); white-space: nowrap; }
   .chip-blue { border-color: #bfd4fe; background: var(--color-accent-wash); color: var(--color-accent-deep); }
-  .card-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--color-ink); }
-  .card-text { margin-top: 6px; font-size: 15px; line-height: 1.5; color: var(--color-body); }
   /* The filled-in parts of the opportunity statement template. */
   .fill { color: var(--color-ink); font-weight: 600; background: linear-gradient(transparent 64%, var(--color-accent-soft) 64%); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 
-  /* Airalo's flow: steps joined by small chevrons */
-  .steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; }
-  .steps > li { position: relative; display: flex; align-items: flex-start; gap: 12px; }
-  .steps > li:not(:last-child)::after { content: ""; position: absolute; top: 14px; right: -15px; width: 7px; height: 7px; border-top: 1.5px solid #c4c4c4; border-right: 1.5px solid #c4c4c4; transform: rotate(45deg); }
+  /* ---------- diagram pieces: icon dots, tracks, marks ---------- */
+  .icn { display: grid; place-items: center; flex: none; width: 46px; height: 46px; border: 1.5px solid #d4d4d4; border-radius: 99px; background: #fff; color: var(--color-ink); }
+  .icn .ic { width: 20px; height: 20px; }
+  .icn.sm { width: 34px; height: 34px; }
+  .icn.sm .ic { width: 16px; height: 16px; }
+  .icn.lg { width: 52px; height: 52px; }
+  .icn.lg .ic { width: 22px; height: 22px; }
+  .icn.blue { border-color: #bfd4fe; color: var(--color-accent); }
+  .icn.warn { border-color: var(--color-warn-line); background: var(--color-warn-wash); color: var(--color-warn); }
+  .icn.ghost { border-style: dashed; border-color: #c9c9c9; background: transparent; color: var(--color-dim); }
+  .icn.key { border-color: var(--color-accent); background: var(--color-accent); color: #fff; }
+  .icn.dark { border-color: rgb(255 255 255 / 0.16); background: rgb(255 255 255 / 0.05); color: #7c9cff; }
+  /* Icon dots on one line. --n is the number of stops; the line runs from the first dot's center to the last's. */
+  .track { position: relative; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); }
+  .track::before { content: ""; position: absolute; top: 22px; left: calc(50% / var(--n)); right: calc(50% / var(--n)); border-top: 2px solid #c3cad5; }
+  .track.dashed::before { border-top: 2px dashed #cfcfcf; }
+  .track > li { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  /* Yes and no marks in the options comparison */
+  .mk { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 99px; vertical-align: middle; }
+  .mk .ic { width: 15px; height: 15px; stroke-width: 2.25; }
+  .mk.yes { background: var(--color-accent-soft); color: var(--color-accent-deep); }
+  .mk.no { background: #f0f0f0; color: var(--color-faint); }
+  .vs { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .vs th { padding: 10px 12px; font-size: 15px; font-weight: 600; color: var(--color-ink); text-align: center; }
+  .vs td { padding: 7px 12px; border-top: 1px solid var(--color-line); font-size: 15.5px; color: var(--color-body); text-align: center; }
+  .vs th:first-child, .vs td:first-child { padding-left: 0; text-align: left; }
+  .vs td:first-child { color: var(--color-ink); }
+  .vs .pick { background: var(--color-accent-wash); }
+  .vs tr.note td { padding-top: 8px; border-top: 0; font-size: 12.5px; color: var(--color-muted); }
+  .vs tr.note .pick { font-weight: 500; color: var(--color-accent-deep); }
 
-  /* Responsibility map */
+  /* Slide 5: what the agent reads, the two roles, what it hands back. The canvas is 1152 x 290. */
+  .ipo { position: relative; height: 290px; }
+  .ipo-path { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
+  .ipo-path path { fill: none; stroke: #c3cad5; stroke-width: 2; }
+  .ipo-path path.maybe { stroke-dasharray: 4 5; }
+  .io { position: absolute; display: flex; align-items: center; gap: 10px; width: 290px; height: 40px; padding: 0 14px; border: 1px solid var(--color-line); border-radius: 10px; background: #fff; font-size: 14.5px; color: var(--color-ink); transform: translateY(-50%); }
+  .io .ic { width: 17px; height: 17px; color: var(--color-accent); }
+  .io.maybe { border-style: dashed; color: var(--color-muted); }
+  .io.maybe .ic { color: var(--color-dim); }
+
+  /* Slide 6: the responsibility map, with lane icons and short cells, then the rules */
+  .duties { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .duties th { padding: 0 14px 10px; text-align: left; font-size: 15px; font-weight: 600; color: var(--color-ink); }
+  .duties td { padding: 11px 14px; border-top: 1px solid var(--color-line); font-size: 15px; color: var(--color-body); }
+  .duties th:first-child, .duties td:first-child { padding-left: 0; }
+  .duties td:first-child { font-size: 14px; font-weight: 600; color: var(--color-ink); }
+  .duties .shared { background: var(--color-accent-wash); color: var(--color-accent-deep); }
+  .duties th.shared { color: var(--color-ink); }
+  .duties tr.key td { font-weight: 600; color: var(--color-ink); }
+  .duties tr.key td:first-child { color: var(--color-accent); }
+  .duties tr.key td.shared { color: var(--color-accent-deep); }
+  .rule { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--color-line); border-radius: 10px; font-size: 13.5px; line-height: 1.4; color: var(--color-ink); }
+  .rule .ic { width: 17px; height: 17px; margin-top: 1px; color: var(--color-accent); }
+  .rule.never { border-color: var(--color-night); background: var(--color-night); color: #fff; }
+  .rule.never .ic { color: #7c9cff; }
+
+  /* Appendix tables (framing and traceability) */
   .rmap { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px; line-height: 1.42; }
   .rmap th { padding: 0 12px 9px; text-align: left; font: 500 10.5px/1.2 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-muted); }
   .rmap td { padding: 10px 12px; border-top: 1px solid var(--color-line); vertical-align: top; color: var(--color-body); }
@@ -131,11 +183,6 @@
   .node-n { font: 500 11px/1 var(--font-mono); letter-spacing: 0.06em; color: var(--color-accent); }
   .node-t { margin-top: 6px; font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; color: var(--color-ink); }
   .node-c { margin-top: 3px; font-size: 12.5px; line-height: 1.35; color: var(--color-muted); }
-
-  /* Prototype phones with captions */
-  .phone .shot { width: 100%; border-radius: 27px; }
-  .phone figcaption { margin-top: 16px; font-size: 13.5px; line-height: 1.45; color: var(--color-body); }
-  .phone figcaption b { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; font-size: 15px; font-weight: 600; color: var(--color-ink); }
 
   /* ---------- title slide ---------- */
   .glow { position: absolute; inset: -120px -160px -120px 38%; background: radial-gradient(closest-side, rgb(37 99 235 / 0.5), rgb(37 99 235 / 0.1) 55%, rgb(37 99 235 / 0)); filter: blur(18px); pointer-events: none; }

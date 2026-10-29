@@ -60,6 +60,7 @@ for (let n = 0; n < count; n++) {
       title: slide.dataset.title,
       n: slide.querySelector(".foot .n")?.textContent,
       notes: (slide.querySelector(".notes")?.textContent || "").trim().split(/\s+/).filter(Boolean).length,
+      talk: (slide.dataset.mode || "talk").includes("talk"),
       spills: spills.slice(0, 8),
       imgs,
       emdash: /—/.test(slide.textContent),
@@ -71,6 +72,8 @@ for (let n = 0; n < count; n++) {
   if (report.spills.length) flags.push(...report.spills)
   if (report.imgs.length) flags.push(`images not loaded: ${report.imgs.join(", ")}`)
   if (!report.notes) flags.push("no speaker notes")
+  // The live demo needs the time, so each talk slide gets 20 to 30 seconds of notes.
+  if (report.talk && report.notes > 80) flags.push(`notes run ${report.notes} words; keep talk slides to about 75 (30 seconds)`)
   if (!report.n) flags.push("no slide number")
   if (report.emdash) flags.push("contains an em dash")
   console.log(`${flags.length ? "!" : "✓"} ${name} ${report.title} (${report.notes} words of notes)`)

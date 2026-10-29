@@ -30,9 +30,11 @@ Clickable prototype for a product design class. Not production code.
 
 ## Assignment 5 deck (`deck/`)
 - Plain HTML and Tailwind 4 (`deck/index.html`, `deck.css`, `deck.js`), separate from the React app. `npm run deck:build` makes one self-contained file in `deck/dist/`.
-- Each slide is a `<section class="slide">` with a `data-title` and an `<aside class="notes">` for speaker notes. Appendix slides take `data-mode="full"` and only show in Full mode. The talk stays at 10 slides.
+- Each slide is a `<section class="slide">` with a `data-title` and an `<aside class="notes">` for speaker notes. Appendix slides take `data-mode="full"` and only show in Full mode. The talk is 9 slides; the assignment allows 8 to 10.
 - Appendices B to E (framing, the E1 to E27 evidence table, traceability, sources) are carried over word for word from the Assignment 4 deck. Restyle them freely, but don't rewrite their content.
 - Icons are `<i data-i="name">`, filled in from `deck/icons.js` (Lucide paths). Add the path there before using a new name.
-- Phone images in `deck/img/` come from the prototype (`npm run deck:shots`). Recapture them after changing a screen the deck shows. The callouts on slide 8 (20 to 23) must match `src/data/screens.js`.
+- Talk slides are visual first: one diagram per slide in the slide 7 style (icon dots, lanes, connecting lines), a few words per item, and the detail in the speaker notes. Slide 4's opportunity statement stays word for word.
+- Speaker notes run 20 to 30 seconds per talk slide (about 55 to 75 words), because the live demo needs the time. `npm run deck:check` flags anything over 80 words.
+- The prototype is demoed live, so the deck has no screenshot slides. The live demo slide uses `deck/img/ask.jpg`, captured from the prototype with `npm run deck:shots`; recapture it after changing the Agent tab.
 - After editing the deck, run `npm run deck:build && npm run deck:check`, look at `screenshots/deck/`, and fix overflow before reporting back. The check also writes the PDFs to `deck/dist/`.
 - Blurred shadows (text-shadow, or box-shadow with blur) print as solid boxes in Preview. Turn them off under `@media print` in `deck.css`.
