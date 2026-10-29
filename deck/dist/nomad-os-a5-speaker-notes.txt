@@ -1,0 +1,75 @@
+NOMAD.OS, Assignment 5
+Speaker script: the exact words to say
+9 slides, about 4 minutes, plus the live demo
+
+------------------------
+1. Booked by AI. Approved by you. (24 sec)
+
+We're presenting NOMAD.OS, a phone for people without a home base. For this assignment, we added one layer of AI: a travel agent inside the app. It books trains, hotels, and dinner from a chat, but it never pays or shares anything until you approve it. Our user, Dani, is in Lisbon and flies to Mexico City in three days.
+
+------------------------
+2. Existing product: Airalo (26 sec)
+
+Our comparable product is Airalo, the largest eSIM marketplace, with over 30 million travelers. We focused on the three days before a new country. Airalo's five steps work well: it's live in minutes, and your home line stays on for bank codes. But it stops at data. The stay, the train, dinner, and bank and VPN decisions are left to other apps, and to you.
+
+------------------------
+3. User, goal, and current flow (25 sec)
+
+Dani is a remote worker, a composite from our research, who wants to land in Mexico City ready to work. Buying the eSIM is easy. Every step after it is a different app with its own risk: conflicting advice about bank codes, a listing that might be fake, a card typed in again and again, and a VPN that can freeze the bank.
+
+------------------------
+4. Opportunity statement (29 sec)
+
+Here's our opportunity. Remote workers juggle bookings and setup decisions across separate apps, and each app leaves the risks in between to guesswork. We want to help them book what they need and arrive set up, approving every payment and detail. AI isn't automatically the answer, so we compared three options. Only an agent books, fits your setup, spots risks, and explains each step, and only with a confirm step and hard limits.
+
+------------------------
+5. AI role and rationale (26 sec)
+
+Our primary AI role is an agent. It takes actions for Dani, within limits Dani sets, because the safe choice depends on dates, card, and network all at once. Its secondary role is an interpreter that explains Dani's setup. On the left is what it reads, and on the right is what it hands back. Choosing, paying, sharing, and cancelling always stay with Dani.
+
+------------------------
+6. Responsibility map (27 sec)
+
+In every row, the agent prepares and Dani decides. The agent never starts on its own. It fills in the details and shortlists the options. Dani picks one, and on the confirm card, Dani confirms, changes, or cancels. The agent always asks before spending money or sharing details, explains what it leaves out, and never touches bank settings. If it's wrong, we answer for what the card showed.
+
+------------------------
+7. Interaction flow (26 sec)
+
+Here's the flow over time, with Dani on top and the agent below. Dani starts it by opening the Agent tab and asking for a hotel. The agent reads the request and shortlists options. Then control comes back to Dani to confirm, change, or cancel, with Face ID over 100 dollars. Finally, the agent follows through, steps in if something looks unsafe, and hands control back.
+
+------------------------
+8. Live demo (27 sec)
+
+Now let's see it live. First, I'll book a hotel. Here's the confirm card, and because it's over 100 dollars, it asks for Face ID. Next, dinner. This restaurant wants a deposit by bank transfer, so the agent refuses and says why. Then I'll cancel a booking, and it shows exactly what comes back. Finally, Check my setup explains each step, and nothing changes until I approve it.
+
+------------------------
+9. Human flourishing (30 sec)
+
+For agency, Dani makes every choice that matters. But Dani might tap Confirm without reading, so confirm cards show only cost, payment, and what's shared, and Face ID only appears over 100 dollars. For learning, the agent explains every warning, so Dani learns to spot scams. But Dani might lean on it, so every setup step shows how to do it yourself. And when it hides a scam listing, it always says so. Thank you.
+
+------------------------
+IF ASKED: APPENDIX SLIDES
+
+Appendix A: placing the AI
+If you're wondering exactly where the AI enters: it only starts when Dani opens the Agent tab or taps Check my setup. It uses only what Dani shares, anything that costs money or shares details needs approval, and every booking can be changed or cancelled.
+
+Appendix B: opportunity statements
+These are the three opportunity areas from our Assignment 4 research. We chose security that moves with you: helping nomads arrive set up and recover from anywhere. This agent grows out of that choice.
+
+Appendix C: evidence table, 1 of 3
+This is the evidence behind the codes on slide 3: 27 public posts from our Assignment 4 research. For each one, we noted the source, what we saw, and what we think it means.
+
+Appendix C: evidence table, 2 of 3
+These items include the platform policies that assume you have a home, and the threads about keeping a home number alive for bank codes.
+
+Appendix C: evidence table, 3 of 3
+And these include the stolen phone in Asunción, and three conflicting answers about bank codes in a single week.
+
+Appendix D: traceability
+This table traces each finding to a design response, and to the screen in the prototype that carries it.
+
+Appendix E: evidence sources
+Here are the sources for every evidence item, and how we collected and dated them.
+
+Appendix F: references
+And these are our references: the products, precedents, and research we drew on.

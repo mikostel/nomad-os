@@ -1,54 +1,54 @@
 // All data here is mock content for the prototype. Country notes are illustrative,
 // not researched travel or legal guidance.
-import { GREETING } from "@/data/travel"
+import { SEED_THREADS, blankThread } from "@/data/travel"
 
 export const USER = { name: "Dani", homeLine: "+1 ••• ••• 4471" }
 
 export const COUNTRIES = {
   PRT: {
-    id: "PRT", name: "Portugal", city: "Lisbon", airport: "LIS", reports: 276, updated: "Oct 2026",
+    id: "PRT", lat: 38.72, lng: -9.14, name: "Portugal", city: "Lisbon", airport: "LIS", reports: 276, updated: "Oct 2026",
     vpnNote: "No VPN restrictions reported.", vpnWarn: false,
     flaggedApps: ["Checking"],
     esim: { plan: "25 GB, 30 days", needsSetup: false },
     emergency: "112", carrier: "+1 800 555 0199",
   },
   MEX: {
-    id: "MEX", name: "Mexico", city: "Mexico City", airport: "MEX", reports: 214, updated: "Oct 2026",
+    id: "MEX", lat: 19.43, lng: -99.13, name: "Mexico", city: "Mexico City", airport: "MEX", reports: 214, updated: "Oct 2026",
     vpnNote: "No VPN restrictions reported in Mexico.", vpnWarn: false,
     flaggedApps: ["Checking", "Wise"],
     esim: { plan: "20 GB, 30 days", needsSetup: false },
     emergency: "911", carrier: "+1 800 555 0199",
   },
   COL: {
-    id: "COL", name: "Colombia", city: "Medellín", airport: "MDE", reports: 168, updated: "Sep 2026",
+    id: "COL", lat: 6.24, lng: -75.58, name: "Colombia", city: "Medellín", airport: "MDE", reports: 168, updated: "Sep 2026",
     vpnNote: "No VPN restrictions reported in Colombia.", vpnWarn: false,
     flaggedApps: ["Checking"],
     esim: { plan: "15 GB, 30 days", needsSetup: false },
     emergency: "123", carrier: "+1 800 555 0199",
   },
   THA: {
-    id: "THA", name: "Thailand", city: "Bangkok", airport: "BKK", reports: 302, updated: "Oct 2026",
+    id: "THA", lat: 13.76, lng: 100.5, name: "Thailand", city: "Bangkok", airport: "BKK", reports: 302, updated: "Oct 2026",
     vpnNote: "No VPN restrictions reported. Some banking apps block foreign exits.", vpnWarn: false,
     flaggedApps: ["Checking", "Wise", "Work email"],
     esim: { plan: "30 GB, 30 days", needsSetup: true, setupNote: "Local eSIMs need passport registration. Do it at the airport kiosk." },
     emergency: "191", carrier: "+1 800 555 0199",
   },
   TUR: {
-    id: "TUR", name: "Türkiye", city: "Istanbul", airport: "IST", reports: 133, updated: "Aug 2026",
+    id: "TUR", lat: 41.01, lng: 28.98, name: "Türkiye", city: "Istanbul", airport: "IST", reports: 133, updated: "Aug 2026",
     vpnNote: "Some sites are blocked here, and VPN reports change often. Check the dates on each report.", vpnWarn: true,
     flaggedApps: ["Checking", "Wise"],
     esim: { plan: "10 GB, 15 days", needsSetup: false },
     emergency: "112", carrier: "+1 800 555 0199",
   },
   ESP: {
-    id: "ESP", name: "Spain", city: "Barcelona", airport: "BCN", reports: 187, updated: "Jul 2026",
+    id: "ESP", lat: 41.39, lng: 2.17, name: "Spain", city: "Barcelona", airport: "BCN", reports: 187, updated: "Jul 2026",
     vpnNote: "No VPN restrictions reported.", vpnWarn: false,
     flaggedApps: ["Checking"],
     esim: { plan: "20 GB, 30 days", needsSetup: false },
     emergency: "112", carrier: "+1 800 555 0199",
   },
   JPN: {
-    id: "JPN", name: "Japan", city: "Tokyo", airport: "HND", reports: 241, updated: "Mar 2026",
+    id: "JPN", lat: 35.68, lng: 139.69, name: "Japan", city: "Tokyo", airport: "HND", reports: 241, updated: "Mar 2026",
     vpnNote: "No VPN restrictions reported.", vpnWarn: false,
     flaggedApps: ["Wise"],
     esim: { plan: "20 GB, 30 days", needsSetup: false },
@@ -130,8 +130,10 @@ export const initialState = () => ({
   showWords: false,
   agent: {}, // per country: { phase: intro | checking | results, share, decisions }
   agentView: "chat", // chat | setup
-  chat: [{ id: "m0", from: "agent", text: GREETING }], // { id, from: agent | me, text?, card?: { type, ..., state } }
-  chatTyping: 0, // replies still on their way
+  // Agent chats. Each thread: { id, title, when, updated, typing, messages }.
+  // A message: { id, from: agent | me, text?, card?: { type, ..., state } }. typing counts replies on their way.
+  threads: [blankThread("c0"), ...SEED_THREADS],
+  activeThread: "c0",
   wizard: false, // operator panel controls the agent's replies (user testing)
   bookings: [], // { id, kind: train | table | delivery | hotel, title, sub }
   loss: initialLoss(),

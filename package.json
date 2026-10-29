@@ -6,7 +6,13 @@
     "build": "vite build",
     "build:single": "vite build --mode single --outDir dist-single",
     "preview": "vite preview",
-    "shots": "node scripts/screenshots.mjs"
+    "shots": "node scripts/screenshots.mjs",
+    "map": "node scripts/build-route-map.mjs",
+    "deck": "vite --config deck/vite.config.js",
+    "deck:build": "vite build --config deck/vite.config.js",
+    "deck:map": "node scripts/build-deck-map.mjs",
+    "deck:shots": "node scripts/deck-shots.mjs",
+    "deck:check": "node scripts/check-deck.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -23,6 +29,7 @@
     "@playwright/test": "^1.64.1",
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-react": "^6.1.2",
+    "dotted-map": "^3.1.0",
     "tailwindcss": "^4.3.3",
     "vite": "^8.3.5",
     "vite-plugin-singlefile": "^2.3.4"

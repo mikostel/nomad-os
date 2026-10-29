@@ -66,7 +66,7 @@ export default function Operator() {
       <div className="flex-1 min-h-0 grid grid-cols-[1fr_380px]">
         <section className="min-h-0 flex flex-col border-r">
           <p className="px-5 pt-4 pb-2 text-[13px] font-semibold text-muted-foreground">
-            What the participant sees{state && <span className="font-normal"> on {state.screen}</span>}
+            What the participant sees{state && <span className="font-normal"> on {state.screen}, in “{state.thread}”</span>}
           </p>
           <div ref={log} className="flex-1 min-h-0 overflow-y-auto px-5 pb-5 flex flex-col gap-2">
             {state?.chat?.map((m) => (
@@ -85,7 +85,8 @@ export default function Operator() {
               <Switch checked={!!state?.wizard} disabled={!connected} onCheckedChange={(on) => post({ type: "wizard", on })} />
               You answer for the agent
             </Label>
-            <p className="text-[13px] text-muted-foreground mt-2 leading-snug">When this is on, the agent waits for you instead of replying from its script. The participant still sees typing dots.</p>
+            <p className="text-[13px] text-muted-foreground mt-2 leading-snug">When this is on, the agent waits for you instead of replying from its script. The participant sees typing dots until you reply.</p>
+            {state?.waiting && <Badge variant="warning" className="mt-3" role="status">The participant is waiting for your reply</Badge>}
           </div>
 
           <div>

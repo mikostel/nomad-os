@@ -1,64 +1,69 @@
 import { useEffect, useRef, useState } from "react"
 import {
-  ArrowUp, BedDouble, Bike, Check, ChevronRight, Clock, CreditCard, MapPin, Minus, Plane, Plus, ScanFace, ShieldAlert, ShieldCheck,
-  Sparkles, Star, TrainFront, Utensils, Wifi,
+  ArrowUp, BedDouble, Bike, Check, ChevronRight, Clock, CreditCard, History, MapPin, Minus, Plane, Plus, ScanFace, ShieldAlert, ShieldCheck,
+  Sparkles, SquarePen, Star, Trash2, TrainFront, Utensils, Wifi, X,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Co, TabBar } from "@/components/app/kit"
+import { PhoneModal } from "@/components/app/device"
 import {
-  DELIVERY, GREETING, HOME_ADDRESS, HOTELS, HOTEL_NIGHTS, PARTY_SIZES, PAY_WITH, RESTAURANTS, SECURITY, SETUP_TEXT, STEP_UP_USD,
+  DELIVERY, HOME_ADDRESS, HOTELS, HOTEL_NIGHTS, PARTY_SIZES, PAY_WITH, RESTAURANTS, SECURITY, SETUP_TEXT, STEP_UP_USD,
   SUGGESTIONS, TABLE_TIMES, TILES, TODAY, TOMORROW, TRAINS, TRAIN_ROUTE, about, detectIntent, price, replyFor, toUsd,
 } from "@/data/travel"
 import { COUNTRIES } from "@/data/mock"
-import { readyCount, useStore } from "@/lib/store"
+import { activeThreadOf, isEmptyThread, readyCount, threadBookings, useStore } from "@/lib/store"
 import { cn } from "@/lib/utils"
 
 export const KIND_ICON = { train: TrainFront, table: Utensils, delivery: Bike, hotel: BedDouble, flight: Plane }
 const TILE_ICON = { train: TrainFront, restaurants: Utensils, delivery: Bike, hotel: BedDouble }
+const PROMPTS = new Set([...TILES, ...SUGGESTIONS].map((x) => x.text))
 
 /* ---------- flows: what the agent says next ---------- */
 function useFlows() {
-  const { st, set, go, addMessages, agentReply, updateCard, addBooking } = useStore()
+  const { st, set, go, addMessages, agentReply, updateCard, addBooking, holdForOperator } = useStore()
+  // Everything a flow says goes to the open thread, even if a reply lands after you've moved on.
+  const thread = st.activeThread
   const trip = st.trips[0]
   const tripCity = trip ? COUNTRIES[trip.countryId].city : "your next stop"
   const ctx = { tripCity, tripDates: trip?.dates }
 
   const send = (text) => {
     if (!text.trim()) return
-    addMessages([{ text: text.trim() }])
-    // During a user test, the operator panel answers instead of the script.
-    if (!st.wizard) agentReply(replyFor(detectIntent(text), ctx))
+    addMessages([{ text: text.trim() }], "me", thread)
+    // During a user test, the operator panel answers instead of the script. Until it does, the agent shows it's typing.
+    if (st.wizard) holdForOperator(thread)
+    else agentReply(replyFor(detectIntent(text), ctx), 750, thread)
   }
 
   const choose = (msg, patch, echo, next) => {
     updateCard(msg.id, patch)
-    addMessages([{ text: echo }])
-    agentReply(next)
+    addMessages([{ text: echo }], "me", thread)
+    agentReply(next, 750, thread)
   }
 
   const confirm = (msg) => {
     const c = msg.card
     updateCard(msg.id, { status: "confirmed" })
     const ref = `NMD-${(4200 + Number(msg.id.slice(1)) * 37).toString(36).toUpperCase()}`
-    addBooking({ ...c.booking, id: msg.id, ref })
+    addBooking({ ...c.booking, id: msg.id, ref, threadId: thread })
     const next = [{ text: c.done, card: { type: "receipt", kind: c.kind, title: c.title, summary: c.booking.sub, ref, bookingId: msg.id, state: {} } }]
     // Booking the trip's hotel is a good moment to point at what isn't ready yet.
     if (c.kind === "hotel" && trip && readyCount(st, trip.countryId) < 4) {
       const left = 4 - readyCount(st, trip.countryId)
       next.push({ text: `Before you fly: your ${tripCity} profile has ${left} ${left === 1 ? "thing" : "things"} to fix.`, card: { type: "setup", state: {} } })
     }
-    agentReply(next, 900)
+    agentReply(next, 900, thread)
   }
   const cancel = (msg) => {
     updateCard(msg.id, { status: "cancelled" })
-    agentReply([{ text: "No problem. Nothing was booked and nothing was shared." }])
+    agentReply([{ text: "No problem. Nothing was booked and nothing was shared." }], 750, thread)
   }
   const change = (msg) => {
     updateCard(msg.id, { status: "changed" })
-    addMessages([{ text: "Let me change that" }])
-    agentReply([{ text: "Sure. Pick again and I’ll update it.", card: { ...msg.card.redo, state: { ...msg.card.redo.state } } }])
+    addMessages([{ text: "Let me change that" }], "me", thread)
+    agentReply([{ text: "Sure. Pick again and I’ll update it.", card: { ...msg.card.redo, state: { ...msg.card.redo.state } } }], 750, thread)
   }
 
   const openSetup = () => { set({ agentView: "setup" }); go("agent", { countryId: trip?.countryId }) }
@@ -373,15 +378,17 @@ function Risk({ msg }) {
 }
 
 function Receipt({ msg }) {
-  const { go } = useStore()
+  const { st, go } = useStore()
   const c = msg.card
   const Icon = KIND_ICON[c.kind]
+  // A booking cancelled later, from its booking screen, shows as cancelled here too.
+  const cancelled = st.bookings.find((b) => b.id === c.bookingId)?.status === "cancelled"
   return (
-    <button onClick={() => go("booking", { bookingId: c.bookingId })} aria-label={`Open ${c.title} booking`}
-      className="self-stretch rounded-2xl bg-success-soft p-3 flex items-center gap-3 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50">
-      <span className="grid place-items-center size-9 rounded-xl bg-success text-white shrink-0"><Icon className="size-[18px]" /></span>
-      <span className="min-w-0 flex-1"><span className="block font-semibold leading-snug">{c.title}</span><span className="block text-[12.5px] text-muted-foreground">{c.summary}</span></span>
-      <span className="font-mono text-[11.5px] text-muted-foreground shrink-0">{c.ref}</span>
+    <button onClick={() => go("booking", { bookingId: c.bookingId })} aria-label={`Open ${c.title} booking${cancelled ? ", cancelled" : ""}`}
+      className={cn("self-stretch rounded-2xl p-3 flex items-center gap-3 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50", cancelled ? "bg-muted" : "bg-success-soft")}>
+      <span className={cn("grid place-items-center size-9 rounded-xl shrink-0", cancelled ? "bg-secondary text-muted-foreground" : "bg-success text-white")}><Icon className="size-[18px]" /></span>
+      <span className="min-w-0 flex-1"><span className={cn("block font-semibold leading-snug", cancelled && "text-muted-foreground")}>{c.title}</span><span className="block text-[12.5px] text-muted-foreground">{c.summary}</span></span>
+      {cancelled ? <Badge variant="outline">Cancelled</Badge> : <span className="font-mono text-[11.5px] text-muted-foreground shrink-0">{c.ref}</span>}
       <ChevronRight className="size-4 text-faint shrink-0" />
     </button>
   )
@@ -411,8 +418,8 @@ function FaceIdSheet({ msg, onDone, onCancel }) {
   }, [])
   const c = msg.card
   return (
-    <div className="absolute inset-0 z-20 flex items-end bg-black/40" role="dialog" aria-modal="true" aria-label="Confirm with Face ID">
-      <div className="notif-in w-full rounded-t-3xl border-t bg-card px-5 pt-5 pb-6 text-center shadow-2xl">
+    <div className="fade-in absolute inset-0 flex items-end bg-black/40" role="dialog" aria-modal="true" aria-label="Confirm with Face ID">
+      <div className="sheet-in w-full rounded-t-3xl border-t bg-card px-5 pt-5 pb-9 text-center shadow-2xl">
         <span className={cn("mx-auto grid place-items-center size-16 rounded-2xl transition-colors", ok ? "bg-success-soft text-success" : "bg-info-soft text-primary")}>
           {ok ? <Check className="size-8" strokeWidth={2.6} /> : <ScanFace className="size-8 animate-pulse" />}
         </span>
@@ -424,53 +431,167 @@ function FaceIdSheet({ msg, onDone, onCancel }) {
   )
 }
 
+/* ---------- chat history: every thread, newest first ---------- */
+function ChatHistory({ onClose, onPick, onNew }) {
+  const { st, deleteThread } = useStore()
+  const [confirming, setConfirming] = useState(null)
+  const threads = st.threads.filter((t) => !isEmptyThread(t)).sort((a, b) => b.updated - a.updated)
+  const groups = [
+    { label: "Today", items: threads.filter((t) => t.when === "Today") },
+    { label: "Earlier", items: threads.filter((t) => t.when !== "Today") },
+  ].filter((g) => g.items.length)
+  const preview = (t) => {
+    const m = [...t.messages].reverse().find((x) => x.text)
+    return m ? `${m.from === "me" ? "You: " : ""}${m.text}` : ""
+  }
+
+  return (
+    <div className="absolute inset-0 flex" role="dialog" aria-modal="true" aria-label="Chat history"
+      onKeyDown={(e) => { if (e.key === "Escape") onClose() }}>
+      <div className="drawer-in w-[86%] h-full pt-[50px] bg-background border-r shadow-2xl flex flex-col">
+        <div className="flex items-center justify-between pl-4 pr-2 pt-1 pb-2 border-b">
+          <p className="text-[17px] font-semibold tracking-[-0.02em]">Chats</p>
+          <Button variant="ghost" size="icon" aria-label="Close chat history" autoFocus onClick={onClose}><X className="size-5" /></Button>
+        </div>
+        <div className="px-3 pt-3">
+          <Button variant="outline" className="w-full justify-start" onClick={onNew}><SquarePen />Start a new chat</Button>
+        </div>
+
+        <div className="flex-1 min-h-0 overflow-y-auto px-2 pt-1 pb-3">
+          {!groups.length && (
+            <p className="px-2 py-6 text-[13px] text-muted-foreground text-center">No chats yet. Ask for a train, dinner, or a hotel and it shows up here.</p>
+          )}
+          {groups.map((g) => (
+            <div key={g.label}>
+              <p className="px-2 mt-4 mb-1 text-[12px] font-medium text-muted-foreground">{g.label}</p>
+              <ul className="flex flex-col gap-0.5">
+                {g.items.map((t) => {
+                  const open = t.id === st.activeThread
+                  const booked = threadBookings(st, t)
+                  if (confirming === t.id) {
+                    return (
+                      <li key={t.id} className="rounded-xl bg-muted p-3" role="group" aria-label={`Delete ${t.title}?`}>
+                        <p className="font-medium text-[14px] leading-snug">Delete “{t.title}”?</p>
+                        <p className="text-[12.5px] text-muted-foreground mt-0.5">{booked ? "Its bookings stay in Trips." : "This can’t be undone."}</p>
+                        <div className="flex gap-2 mt-2.5">
+                          <Button size="sm" variant="destructive" onClick={() => { deleteThread(t.id); setConfirming(null) }}>Delete</Button>
+                          <Button size="sm" variant="ghost" autoFocus onClick={() => setConfirming(null)}>Keep</Button>
+                        </div>
+                      </li>
+                    )
+                  }
+                  return (
+                    <li key={t.id} className={cn("flex items-start rounded-xl", open && "bg-info-soft")}>
+                      <button onClick={() => onPick(t.id)} aria-current={open ? "true" : undefined}
+                        className={cn("flex-1 min-w-0 text-left pl-3 pr-1 py-2.5 rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50", !open && "hover:bg-accent/70")}>
+                        <span className="flex items-center justify-between gap-2">
+                          <span className="flex items-center gap-1.5 min-w-0">
+                            {t.unread && <span className="size-2 rounded-full bg-primary shrink-0" aria-hidden="true" />}
+                            <span className={cn("leading-snug truncate", t.unread ? "font-semibold" : "font-medium")}>{t.title}</span>
+                            {t.unread && <span className="sr-only">, new reply</span>}
+                          </span>
+                          <span className={cn("text-[11.5px] shrink-0", open ? "text-primary font-medium" : "text-muted-foreground")}>{open ? "Open" : t.when}</span>
+                        </span>
+                        <span className="block text-[12.5px] text-muted-foreground truncate mt-0.5">{preview(t)}</span>
+                        {booked > 0 && <Badge variant="success" className="mt-1.5"><Check strokeWidth={3} />{booked} booked</Badge>}
+                      </button>
+                      <Button size="icon" variant="ghost" className="mt-1.5 mr-0.5 text-muted-foreground" aria-label={`Delete ${t.title}`} onClick={() => setConfirming(t.id)}>
+                        <Trash2 />
+                      </Button>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <p className="px-4 pt-3 pb-7 border-t text-[12px] text-muted-foreground flex items-start gap-1.5 leading-snug">
+          <ShieldCheck className="size-3.5 mt-px text-success shrink-0" />Chats are saved on this phone. Deleting one doesn’t cancel its bookings.
+        </p>
+      </div>
+      <button className="fade-in flex-1 bg-black/30" aria-label="Close chat history" tabIndex={-1} onClick={onClose} />
+    </div>
+  )
+}
+
 /* ---------- screen ---------- */
 export default function AgentChat() {
-  const { st, updateCard } = useStore()
+  const { st, updateCard, newThread, openThread, markRead } = useStore()
   const flows = useFlows()
+  const thread = activeThreadOf(st)
   const [text, setText] = useState("")
   const [verifying, setVerifying] = useState(null)
+  const [historyOpen, setHistoryOpen] = useState(false)
   const scroller = useRef(null)
-  const busy = st.chatTyping > 0
-  const started = st.chat.some((m) => m.from === "me")
-  const lastAgent = [...st.chat].reverse().find((m) => m.from === "agent" && m.text)
+  const historyButton = useRef(null)
+  const input = useRef(null)
+  const busy = thread.typing > 0 // a scripted reply is on its way
+  const waiting = busy || thread.held > 0 // or the operator hasn't answered yet
+  const started = !isEmptyThread(thread)
+  const lastAgent = [...thread.messages].reverse().find((m) => m.from === "agent" && m.text)
+  const otherUnread = st.threads.some((t) => t.unread && t.id !== thread.id)
+  // Chips for what you haven't asked about in this chat yet. Only tapped prompts count, since a typed
+  // question can mention a hotel without being a hotel request.
+  const asked = new Set(thread.messages.filter((m) => m.from === "me" && PROMPTS.has(m.text)).map((m) => detectIntent(m.text)))
+  const chips = SUGGESTIONS.filter((s) => !asked.has(detectIntent(s.text)))
 
+  // New messages ease in. The ones already there when a chat opens don't.
+  const shown = useRef({ thread: null, ids: null })
+  if (shown.current.thread !== thread.id) shown.current = { thread: thread.id, ids: new Set(thread.messages.map((m) => m.id)) }
+
+  // Seeing a chat marks its replies as read.
+  useEffect(() => { if (thread.unread) markRead(thread.id) }, [thread.id, thread.unread, markRead])
+
+  // Follow new messages and thread switches, but not small card updates like a quantity change.
   useEffect(() => {
     const el = scroller.current
     if (el) el.scrollTop = el.scrollHeight
-  }, [st.chat, st.chatTyping])
+  }, [thread.id, thread.messages.length, thread.typing])
 
   const submit = (e) => { e.preventDefault(); if (busy) return; flows.send(text); setText("") }
   const stepUp = (msg) => { updateCard(msg.id, { status: "verifying" }); setVerifying(msg) }
   const stepUpDone = () => { flows.confirm(verifying); setVerifying(null) }
   const stepUpCancel = () => { updateCard(verifying.id, { status: undefined }); setVerifying(null) }
 
+  // Focus moves after the frame, once the screen behind the drawer can take focus again.
+  const focusLater = (el) => requestAnimationFrame(() => el()?.focus())
+  const closeHistory = () => { setHistoryOpen(false); focusLater(() => historyButton.current?.querySelector("button")) }
+  const startNew = () => { newThread(); setText(""); setHistoryOpen(false); focusLater(() => input.current) }
+  const pick = (id) => { openThread(id); setText(""); setHistoryOpen(false); focusLater(() => input.current) }
+
   return (
     <div className="relative flex-1 min-h-0 flex flex-col">
-      <div className="px-5 pt-2 pb-3 border-b shrink-0">
-        <div className="flex items-center gap-2.5">
-          <span className="grid place-items-center size-9 rounded-xl bg-primary text-primary-foreground"><Sparkles className="size-[18px]" /></span>
-          <span>
-            <span className="block text-[17px] font-semibold tracking-[-0.02em] leading-tight">Agent</span>
-            <span className="flex items-center gap-1 text-[12px] text-muted-foreground"><ShieldCheck className="size-3 text-success" />Books and pays only when you confirm</span>
-          </span>
+      <div className="flex items-center gap-1 px-2 pt-1 pb-2 border-b shrink-0">
+        <span ref={historyButton}>
+          <Button variant="ghost" size="icon" className="relative size-10" aria-label={otherUnread ? "Chat history, new reply" : "Chat history"}
+            aria-haspopup="dialog" aria-expanded={historyOpen} onClick={() => setHistoryOpen(true)}>
+            <History className="size-5" />
+            {otherUnread && <span className="absolute top-2 right-2 size-2 rounded-full bg-primary ring-2 ring-background" />}
+          </Button>
+        </span>
+        <div className="flex-1 min-w-0 text-center">
+          <p className="text-[16px] font-semibold tracking-[-0.02em] leading-tight truncate">{thread.title || "Agent"}</p>
+          <p className="flex items-center justify-center gap-1 text-[11.5px] text-muted-foreground mt-0.5"><ShieldCheck className="size-3 text-success shrink-0" />Books and pays only when you confirm</p>
         </div>
+        <Button variant="ghost" size="icon" className="size-10" aria-label="New chat" disabled={!started} onClick={startNew}>
+          <SquarePen className="size-5" />
+        </Button>
       </div>
 
       {/* Screen readers hear each new agent message once, not the whole chat again. */}
-      <p className="sr-only" aria-live="polite">{lastAgent && lastAgent.id !== "m0" ? lastAgent.text : ""}</p>
+      <p className="sr-only" aria-live="polite">{lastAgent && !lastAgent.greeting ? lastAgent.text : ""}</p>
 
       <div ref={scroller} className="flex-1 min-h-0 overflow-y-auto px-4 py-3 flex flex-col gap-3 text-pretty">
-        {st.chat.map((m) => {
+        {thread.messages.map((m) => {
           const Card = m.card && CARDS[m.card.type]
           return (
-            <div key={m.id} className="contents">
-              {m.text && (m.from === "me" ? <MyBubble>{m.text}</MyBubble> : <AgentText>{m.id === "m0" ? GREETING : m.text}</AgentText>)}
+            <div key={m.id} className={cn("flex flex-col gap-3", !shown.current.ids.has(m.id) && "msg-in")}>
+              {m.text && (m.from === "me" ? <MyBubble>{m.text}</MyBubble> : <AgentText>{m.text}</AgentText>)}
               {Card && <Card msg={m} flows={flows} onStepUp={stepUp} />}
             </div>
           )
         })}
-
         {!started && (
           <>
             <div className="grid grid-cols-2 gap-2">
@@ -496,29 +617,30 @@ export default function AgentChat() {
           </>
         )}
 
-        {busy && (
-          <div className="self-start flex gap-1 py-2" aria-label="Agent is typing">
+        {waiting && (
+          <div className="self-start flex gap-1 py-2" role="status" aria-label="Agent is typing">
             {[0, 1, 2].map((i) => <span key={i} className="size-1.5 rounded-full bg-muted-foreground/60 animate-pulse" style={{ animationDelay: `${i * 150}ms` }} />)}
           </div>
         )}
       </div>
 
-      <div className="shrink-0 border-t pt-2">
-        {started && (
+      <div className="shrink-0 border-t pt-2 pb-3">
+        {started && chips.length > 0 && (
           <div className="flex gap-1.5 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [mask-image:linear-gradient(to_right,black_85%,transparent)]">
-            {SUGGESTIONS.map((s) => (
+            {chips.map((s) => (
               <Button key={s.label} size="sm" variant="outline" className="rounded-full shrink-0" disabled={busy} onClick={() => flows.send(s.text)}>{s.label}</Button>
             ))}
           </div>
         )}
         <form onSubmit={submit} className="flex items-center gap-2 px-4">
-          <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Ask for a train, dinner, a hotel…" aria-label="Message the agent" className="h-10 rounded-full px-4" />
+          <Input ref={input} value={text} onChange={(e) => setText(e.target.value)} placeholder="Ask for a train, dinner, a hotel…" aria-label="Message the agent" className="h-10 rounded-full px-4" />
           <Button type="submit" size="icon" className="rounded-full shrink-0 size-10" aria-label="Send" disabled={!text.trim() || busy}><ArrowUp /></Button>
         </form>
       </div>
       <div className="px-5"><TabBar active="agent" /></div>
 
-      {verifying && <FaceIdSheet msg={verifying} onDone={stepUpDone} onCancel={stepUpCancel} />}
+      {verifying && <PhoneModal><FaceIdSheet msg={verifying} onDone={stepUpDone} onCancel={stepUpCancel} /></PhoneModal>}
+      {historyOpen && <PhoneModal><ChatHistory onClose={closeHistory} onPick={pick} onNew={startNew} /></PhoneModal>}
     </div>
   )
 }

@@ -8,6 +8,7 @@ import { activeBookings, readyCount, tripFor, useStore } from "@/lib/store"
 import { SECURITY, TODAY, TOMORROW, detectIntent, replyFor } from "@/data/travel"
 import { cn } from "@/lib/utils"
 import { KIND_ICON } from "./AgentChat"
+import RouteMap from "@/components/app/RouteMap"
 
 function ProfileButton({ countryId, big }) {
   const { st, go, startDownload } = useStore()
@@ -81,13 +82,15 @@ function useItinerary() {
 }
 
 function ItineraryRow({ it }) {
-  const { st, set, go, addMessages, agentReply } = useStore()
+  const { st, set, go, newThread, addMessages, agentReply } = useStore()
   const trip = st.trips[0]
   const Icon = it.kind === "profile" ? Globe : it.kind === "ask" ? Sparkles : KIND_ICON[it.kind]
   const askAgent = () => {
+    // A request from Trips gets its own chat, not the end of whatever thread was open.
     set({ agentView: "chat" })
-    addMessages([{ text: it.ask }])
-    agentReply(replyFor(detectIntent(it.ask), { tripCity: COUNTRIES[trip.countryId].city, tripDates: trip.dates }))
+    const id = newThread()
+    addMessages([{ text: it.ask }], "me", id)
+    agentReply(replyFor(detectIntent(it.ask), { tripCity: COUNTRIES[trip.countryId].city, tripDates: trip.dates }), 750, id)
     go("agent")
   }
   const open = it.kind === "flight" ? undefined
@@ -131,9 +134,13 @@ export default function Home() {
         </div>
 
         {next ? (
-          <div className="relative mt-4 rounded-3xl bg-navy text-white p-5 shrink-0 ring-1 ring-white/10"
-            style={{ backgroundImage: "radial-gradient(rgba(157,179,255,.18) 1px, transparent 1.3px)", backgroundSize: "16px 16px" }}>
+          <div className="relative mt-4 rounded-3xl bg-navy text-white p-5 shrink-0 ring-1 ring-white/10">
+            {/* The destination on a dotted map, faded out behind the text rows. On its own clipped layer so the callouts can still overhang the card. */}
+            <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_26%,black_40%,black_58%,transparent_92%)]">
+              <RouteMap to={nextC} className="size-full" />
+            </div>
             <Co n={1} className="-right-1.5 -top-1.5" />
+            <div className="relative">
             <p className="text-[13px] text-[#A3AECB]">{next.inDays ? `Next trip, in ${next.inDays} days` : `Next trip, ${next.dates}`}</p>
             <div className="flex items-center gap-3 mt-2 font-mono font-semibold text-[26px] tracking-wide">
               <span>{next.from}</span>
@@ -151,6 +158,7 @@ export default function Home() {
             {!st.profiles[next.countryId]?.installed && st.downloading?.id !== next.countryId && (
               <p className="text-[12px] text-[#A3AECB] text-center mt-2.5">About 10 minutes to set up</p>
             )}
+            </div>
           </div>
         ) : (
           <div className="mt-4 rounded-3xl border border-dashed p-6 text-center">

@@ -102,14 +102,20 @@ const TABS = [
   { id: "security", screen: "vault", label: "Security", icon: ShieldCheck },
 ]
 export function TabBar({ active }) {
-  const { go } = useStore()
+  const { st, go } = useStore()
+  // A reply that landed while you were elsewhere puts a dot on the Agent tab.
+  const unread = st.threads.some((t) => t.unread)
   return (
     <nav className="-mx-5 px-6 flex justify-around pt-2 border-t bg-background shrink-0 mt-auto">
       {TABS.map(({ id, screen, label, icon: Icon }) => (
         <button key={id} onClick={() => go(screen, { from: screen })} aria-current={active === id ? "page" : undefined}
           className={cn("flex flex-col items-center gap-1 px-4 py-1 rounded-lg text-[11px] cursor-pointer outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
             active === id ? "text-primary" : "text-faint hover:text-muted-foreground")}>
-          <Icon className="size-[22px]" />{label}
+          <span className="relative">
+            <Icon className="size-[22px]" />
+            {id === "agent" && unread && <span className="absolute -top-0.5 -right-1 size-2.5 rounded-full bg-primary ring-2 ring-background" />}
+          </span>
+          {label}{id === "agent" && unread && <span className="sr-only">, new reply</span>}
         </button>
       ))}
     </nav>

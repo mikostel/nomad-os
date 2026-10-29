@@ -116,7 +116,44 @@ export function detectIntent(text) {
   return "help"
 }
 
-export const INTENT_LABEL = { train: "Train options", restaurants: "Restaurants", delivery: "Delivery places", hotel: "Hotels", setup: "Setup check card", help: "What I can do" }
+/* ---------- chat threads ---------- */
+// The agent keeps one thread per conversation. A new thread opens with the greeting.
+export const blankThread = (id, updated = 0) => ({
+  id, title: "", when: "Today", updated, typing: 0,
+  messages: [{ id: `${id}-hi`, from: "agent", text: GREETING, greeting: true }],
+})
+
+// A thread is named after its first request, so history reads like a list of trips, not timestamps.
+// Tapped prompts get a short preset title. Anything typed keeps the person's own words, since keyword
+// matching can mislabel it ("a gym near the hotel" isn't a hotel booking).
+const THREAD_TITLE = { train: "Train to Porto", restaurants: "Dinner nearby", delivery: "Delivery tonight", hotel: "Hotel in Mexico City", setup: "Setup check" }
+export const titleFor = (text) => {
+  const t = text.trim()
+  const preset = [...TILES.map((x) => x.text), ...SUGGESTIONS.map((x) => x.text)].includes(t) && THREAD_TITLE[detectIntent(t)]
+  const cut = t.length > 34 ? `${t.slice(0, t.lastIndexOf(" ", 33) > 12 ? t.lastIndexOf(" ", 33) : 32).replace(/[\s,.;:!?]+$/, "")}…` : t
+  const title = preset || cut
+  return title.charAt(0).toUpperCase() + title.slice(1) // sentence case, even if typed in lowercase
+}
+
+// Past chats from the trips already in the mock data (Barcelona in July, Tokyo in March).
+export const SEED_THREADS = [
+  {
+    id: "seed-bcn", title: "Hotel in Barcelona", when: "Jul 2026", updated: -1, typing: 0, pastBookings: 1,
+    messages: [
+      { id: "seed-bcn-1", from: "me", text: "Find a quiet place to stay in Barcelona, Jul 2 to 20" },
+      { id: "seed-bcn-2", from: "agent", text: "Booked Gràcia Courtyard Rooms for 18 nights. The Wi-Fi tested at 180 Mbps, and your VPN stays on there." },
+    ],
+  },
+  {
+    id: "seed-kyo", title: "Train to Kyoto", when: "Mar 2026", updated: -2, typing: 0, pastBookings: 1,
+    messages: [
+      { id: "seed-kyo-1", from: "me", text: "Train from Tokyo to Kyoto on Friday morning" },
+      { id: "seed-kyo-2", from: "agent", text: "Booked the 9:03 express to Kyoto, seat 7D. Your ticket works offline, so you won’t need data on the train." },
+    ],
+  },
+]
+
+export const INTENT_LABEL ={ train: "Train options", restaurants: "Restaurants", delivery: "Delivery places", hotel: "Hotels", setup: "Setup check card", help: "What I can do" }
 
 /** The agent's first reply to each kind of request. The chat and the operator panel both use this. */
 export function replyFor(intent, { tripCity = "Mexico City", tripDates = "your dates" } = {}) {

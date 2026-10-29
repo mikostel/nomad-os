@@ -1,0 +1,244 @@
+@import "tailwindcss" source("./");
+@source not "./dist";
+
+/* Geist and Geist Mono, latin only, so the built file stays small and works offline. */
+@font-face {
+  font-family: "Geist Variable";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url("../node_modules/@fontsource-variable/geist/files/geist-latin-wght-normal.woff2") format("woff2-variations");
+}
+@font-face {
+  font-family: "Geist Mono Variable";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url("../node_modules/@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2") format("woff2-variations");
+}
+
+/* The NOMAD.OS brand system from earlier decks: ink, greys, and one blue. */
+@theme {
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, monospace;
+  --color-ink: #171717;
+  --color-night: #0a0a0a;
+  --color-body: #525252;
+  --color-muted: #737373;
+  --color-dim: #8f8f8f; /* second headline line: 3.2:1 on white, enough for large text */
+  --color-faint: #a3a3a3;
+  --color-line: #e5e5e5;
+  --color-panel: #fafafa;
+  --color-accent: #2563eb;
+  --color-accent-deep: #1d4ed8;
+  --color-accent-soft: #dbeafe;
+  --color-accent-wash: #eff5ff;
+  /* Risk and friction, the same amber the app uses for its risk cards */
+  --color-warn: #b45309;
+  --color-warn-line: #f4d18f;
+  --color-warn-wash: #fff8eb;
+}
+
+@layer base {
+  html, body { height: 100%; margin: 0; }
+  body { background: #f5f5f5; color: var(--color-ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; overflow: hidden; }
+  .slide :is(p, li, dd, figcaption) { text-wrap: pretty; } /* no one-word last lines; nowrap pieces still win */
+}
+
+@layer components {
+  /* ---------- slide canvas: 1280 x 720, scaled to fit ---------- */
+  /* Centered by position, not grid: a grid start-aligns the 1280px box in narrower windows, so it drifted right. */
+  .stage { position: fixed; inset: 0; overflow: hidden; }
+  .deck { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; transform-origin: center; }
+  .slide {
+    position: absolute; inset: 0; display: none; flex-direction: column; overflow: hidden;
+    padding: 56px 64px 72px; background: #fff; color: var(--color-ink); border-radius: 4px;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 18px 40px -20px rgb(0 0 0 / 0.25);
+  }
+  .slide.is-active { display: flex; }
+  .slide > .notes { display: none; }
+  .slide.ink { background: var(--color-night); color: #fff; }
+
+  /* ---------- type ---------- */
+  .kicker { display: block; margin-bottom: 18px; font: 500 11.5px/1.2 var(--font-mono); letter-spacing: 0.22em; text-transform: uppercase; color: var(--color-accent); }
+  .hl { font-weight: 700; letter-spacing: -0.035em; line-height: 1.02; text-wrap: balance; }
+  .hl .dim { display: block; color: var(--color-dim); }
+  .lede { color: var(--color-accent); font-weight: 500; font-size: 21px; line-height: 1.45; letter-spacing: -0.005em; }
+  .meta { font: 400 12.5px/1.4 var(--font-mono); letter-spacing: 0.02em; color: var(--color-muted); }
+  .label { font: 500 11px/1.2 var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); }
+  .num { font: 500 13px/1 var(--font-mono); letter-spacing: 0.04em; color: var(--color-accent); }
+  .ev { display: inline-block; padding: 1px 6px; border: 1px solid var(--color-line); border-radius: 4px; background: var(--color-panel); font: 500 11px/1.4 var(--font-mono); color: var(--color-muted); white-space: nowrap; }
+
+  /* ---------- pieces ---------- */
+  .card { border: 1px solid var(--color-line); border-radius: 6px; background: #fff; }
+  .foot { position: absolute; left: 64px; right: 64px; bottom: 26px; display: flex; justify-content: space-between; align-items: baseline; z-index: 2; }
+  .foot span:first-child { font: 500 10.5px var(--font-mono); letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-faint); }
+  .foot .n { font: 500 10.5px var(--font-mono); letter-spacing: 0.12em; color: var(--color-accent); }
+  .ink .foot span:first-child { color: var(--color-muted); }
+  /* Phone screenshots: the corners are clipped to the bezel's radius, 60px at full size. */
+  .shot { display: block; width: 196px; aspect-ratio: 390 / 801; object-fit: cover; border-radius: 30px; box-shadow: 0 22px 36px -22px rgb(10 15 30 / 0.55); }
+
+  /* ---------- content pieces ---------- */
+  .ic { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .chip { display: inline-flex; align-items: center; gap: 5px; padding: 0 8px; border: 1px solid var(--color-line); border-radius: 99px; background: #fff; font: 500 11.5px/20px var(--font-sans); color: var(--color-body); white-space: nowrap; }
+  .chip-blue { border-color: #bfd4fe; background: var(--color-accent-wash); color: var(--color-accent-deep); }
+  /* The filled-in parts of the opportunity statement template. */
+  .fill { color: var(--color-ink); font-weight: 600; background: linear-gradient(transparent 64%, var(--color-accent-soft) 64%); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+
+  /* ---------- diagram pieces: icon dots, tracks, marks ---------- */
+  .icn { display: grid; place-items: center; flex: none; width: 46px; height: 46px; border: 1.5px solid #d4d4d4; border-radius: 99px; background: #fff; color: var(--color-ink); }
+  .icn .ic { width: 20px; height: 20px; }
+  .icn.sm { width: 34px; height: 34px; }
+  .icn.sm .ic { width: 16px; height: 16px; }
+  .icn.lg { width: 52px; height: 52px; }
+  .icn.lg .ic { width: 22px; height: 22px; }
+  .icn.blue { border-color: #bfd4fe; color: var(--color-accent); }
+  .icn.warn { border-color: var(--color-warn-line); background: var(--color-warn-wash); color: var(--color-warn); }
+  .icn.ghost { border-style: dashed; border-color: #c9c9c9; background: transparent; color: var(--color-dim); }
+  .icn.key { border-color: var(--color-accent); background: var(--color-accent); color: #fff; }
+  .icn.dark { border-color: rgb(255 255 255 / 0.16); background: rgb(255 255 255 / 0.05); color: #7c9cff; }
+  /* Icon dots on one line. --n is the number of stops; the line runs from the first dot's center to the last's. */
+  .track { position: relative; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); }
+  .track::before { content: ""; position: absolute; top: 22px; left: calc(50% / var(--n)); right: calc(50% / var(--n)); border-top: 2px solid #c3cad5; }
+  .track.dashed::before { border-top: 2px dashed #cfcfcf; }
+  .track > li { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  /* Yes and no marks in the options comparison */
+  .mk { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 99px; vertical-align: middle; }
+  .mk .ic { width: 15px; height: 15px; stroke-width: 2.25; }
+  .mk.yes { background: var(--color-accent-soft); color: var(--color-accent-deep); }
+  .mk.no { background: #f0f0f0; color: var(--color-faint); }
+  .vs { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .vs th { padding: 10px 12px; font-size: 15px; font-weight: 600; color: var(--color-ink); text-align: center; }
+  .vs td { padding: 7px 12px; border-top: 1px solid var(--color-line); font-size: 15.5px; color: var(--color-body); text-align: center; }
+  .vs th:first-child, .vs td:first-child { padding-left: 0; text-align: left; }
+  .vs td:first-child { color: var(--color-ink); }
+  .vs .pick { background: var(--color-accent-wash); }
+  .vs tr.note td { padding-top: 8px; border-top: 0; font-size: 12.5px; color: var(--color-muted); }
+  .vs tr.note .pick { font-weight: 500; color: var(--color-accent-deep); }
+
+  /* Slide 5: what the agent reads, the two roles, what it hands back. The canvas is 1152 x 290. */
+  .ipo { position: relative; height: 290px; }
+  .ipo-path { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
+  .ipo-path path { fill: none; stroke: #c3cad5; stroke-width: 2; }
+  .ipo-path path.maybe { stroke-dasharray: 4 5; }
+  .io { position: absolute; display: flex; align-items: center; gap: 10px; width: 290px; height: 40px; padding: 0 14px; border: 1px solid var(--color-line); border-radius: 10px; background: #fff; font-size: 14.5px; color: var(--color-ink); transform: translateY(-50%); }
+  .io .ic { width: 17px; height: 17px; color: var(--color-accent); }
+  .io.maybe { border-style: dashed; color: var(--color-muted); }
+  .io.maybe .ic { color: var(--color-dim); }
+
+  /* Slide 6: the responsibility map, with lane icons and short cells, then the rules */
+  .duties { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .duties th { padding: 0 14px 10px; text-align: left; font-size: 15px; font-weight: 600; color: var(--color-ink); }
+  .duties td { padding: 11px 14px; border-top: 1px solid var(--color-line); font-size: 15px; color: var(--color-body); }
+  .duties th:first-child, .duties td:first-child { padding-left: 0; }
+  .duties td:first-child { font-size: 14px; font-weight: 600; color: var(--color-ink); }
+  .duties .shared { background: var(--color-accent-wash); color: var(--color-accent-deep); }
+  .duties th.shared { color: var(--color-ink); }
+  .duties tr.key td { font-weight: 600; color: var(--color-ink); }
+  .duties tr.key td:first-child { color: var(--color-accent); }
+  .duties tr.key td.shared { color: var(--color-accent-deep); }
+  .rule { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--color-line); border-radius: 10px; font-size: 13.5px; line-height: 1.4; color: var(--color-ink); }
+  .rule .ic { width: 17px; height: 17px; margin-top: 1px; color: var(--color-accent); }
+  .rule.never { border-color: var(--color-night); background: var(--color-night); color: #fff; }
+  .rule.never .ic { color: #7c9cff; }
+
+  /* Appendix tables (framing and traceability) */
+  .rmap { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px; line-height: 1.42; }
+  .rmap th { padding: 0 12px 9px; text-align: left; font: 500 10.5px/1.2 var(--font-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-muted); }
+  .rmap td { padding: 10px 12px; border-top: 1px solid var(--color-line); vertical-align: top; color: var(--color-body); }
+  .rmap th:first-child, .rmap td:first-child { padding-left: 0; }
+  .rmap td:first-child { font-weight: 600; color: var(--color-ink); }
+  .rmap td.shared { background: var(--color-accent-wash); color: var(--color-accent-deep); }
+  .rmap th.shared { color: var(--color-accent); }
+
+  /* Appendix tables carried over from Assignment 4 */
+  .fills b { font-weight: 600; color: var(--color-ink); }
+  .rmap.tight td { padding-top: 7px; padding-bottom: 7px; }
+  .etab { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; line-height: 1.36; }
+  .etab th { padding: 0 10px 7px 0; text-align: left; font: 500 10px/1.2 var(--font-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-muted); }
+  .etab td { padding: 5px 10px 5px 0; border-top: 1px solid var(--color-line); vertical-align: top; color: var(--color-body); }
+  .etab td:nth-child(2) { color: var(--color-muted); }
+  .etab td:nth-child(3) { color: var(--color-ink); }
+
+  /* Interaction flow: two lanes show who has control, one line runs through the eight steps.
+     The canvas is 1152 x 430. Dani's dots sit at y 140, the agent's at y 290, columns are 130 wide. */
+  .lanes { position: relative; height: 430px; }
+  .lane { position: absolute; left: 0; right: 0; display: flex; align-items: center; border-radius: 14px; }
+  .lane.dani { top: 0; height: 205px; background: var(--color-accent-wash); }
+  .lane.agent { top: 225px; height: 205px; background: var(--color-panel); }
+  .lane-name { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 84px; font-size: 14px; font-weight: 600; color: var(--color-ink); }
+  .lane-name .ic { width: 20px; height: 20px; color: var(--color-muted); }
+  .lane.dani .lane-name .ic { color: var(--color-accent); }
+  .lane-path { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
+  .lane-path path { fill: none; stroke: #c3cad5; stroke-width: 2; stroke-linecap: round; }
+  .ndot { position: absolute; display: grid; place-items: center; width: 48px; height: 48px; border: 1.5px solid #d4d4d4; border-radius: 99px; background: #fff; color: var(--color-ink); transform: translate(-50%, -50%); }
+  .ndot .ic { width: 20px; height: 20px; }
+  .ndot.dani { border-color: #bfd4fe; color: var(--color-accent); }
+  /* A spread-only ring: blurred shadows print as boxes in Preview */
+  .ndot.key { width: 64px; height: 64px; border: 0; background: var(--color-accent); color: #fff; box-shadow: 0 0 0 6px var(--color-accent-soft); }
+  .ndot.key .ic { width: 28px; height: 28px; }
+  .nlab { position: absolute; width: 130px; transform: translateX(-50%); text-align: center; }
+  .nlab.up { bottom: 326px; }
+  .nlab.down { top: 326px; }
+  .node-n { font: 500 11px/1 var(--font-mono); letter-spacing: 0.06em; color: var(--color-accent); }
+  .node-t { margin-top: 6px; font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; color: var(--color-ink); }
+  .node-c { margin-top: 3px; font-size: 12.5px; line-height: 1.35; color: var(--color-muted); }
+
+  /* ---------- title slide ---------- */
+  .glow { position: absolute; inset: -120px -160px -120px 38%; background: radial-gradient(closest-side, rgb(37 99 235 / 0.5), rgb(37 99 235 / 0.1) 55%, rgb(37 99 235 / 0)); filter: blur(18px); pointer-events: none; }
+  .title-map { position: absolute; left: 632px; top: 40px; width: 800px; aspect-ratio: 116 / 92; pointer-events: none;
+    -webkit-mask-image: radial-gradient(ellipse 60% 64% at 43% 47%, #000 52%, transparent 100%);
+    mask-image: radial-gradient(ellipse 60% 64% at 43% 47%, #000 52%, transparent 100%); }
+  .title-map svg { display: block; width: 100%; height: 100%; }
+  .title-map path { fill: none; stroke-linecap: round; stroke-width: 0.44; }
+  .title-map .map-land { stroke: rgb(255 255 255 / 0.24); }
+  .title-map .map-from { stroke: rgb(255 255 255 / 0.55); }
+  .title-map .map-to { stroke: rgb(96 165 250 / 0.85); }
+  .title-map .pin-from { fill: #fff; }
+  .title-map .pin-to { fill: #3b82f6; stroke: #fff; stroke-width: 0.22; }
+  .title-map .pin-ping { fill: #60a5fa; opacity: 0.45; transform-box: fill-box; transform-origin: center; }
+  .pin-label { position: absolute; transform: translate(14px, -50%); white-space: nowrap; font: 500 11px/1.35 var(--font-mono); letter-spacing: 0.06em; color: var(--color-faint); text-shadow: 0 0 3px var(--color-night), 0 0 8px var(--color-night), 0 0 14px var(--color-night); }
+  .pin-label b { display: block; font-weight: 600; color: #fff; letter-spacing: 0.14em; text-transform: uppercase; }
+  .pin-label.left { transform: translate(calc(-100% - 14px), -50%); text-align: right; }
+
+  /* ---------- controls, notes, presenter ---------- */
+  .controls { position: fixed; right: 16px; bottom: 16px; z-index: 20; display: flex; align-items: center; gap: 2px; padding: 5px; border: 1px solid var(--color-line); border-radius: 10px; background: #fff; box-shadow: 0 8px 24px -8px rgb(16 24 40 / 0.22); transition: opacity 200ms; }
+  .controls.is-idle { opacity: 0; pointer-events: none; }
+  .controls button { padding: 7px 10px; border-radius: 6px; font: 500 13px var(--font-sans); color: var(--color-ink); cursor: pointer; }
+  .controls button:hover { background: var(--color-panel); }
+  .controls button[aria-pressed="true"] { background: var(--color-accent-soft); color: var(--color-accent-deep); }
+  .controls button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+  .controls .count { min-width: 56px; text-align: center; font: 400 12.5px var(--font-mono); color: var(--color-muted); }
+  .controls .sep { width: 1px; height: 20px; margin: 0 4px; background: var(--color-line); }
+  .notes-panel { position: fixed; left: 16px; bottom: 16px; z-index: 20; width: min(560px, calc(100vw - 460px)); max-height: 46vh; overflow: auto; padding: 14px 16px; border: 1px solid var(--color-line); border-radius: 10px; background: #fff; box-shadow: 0 8px 24px -8px rgb(16 24 40 / 0.22); font-size: 14.5px; line-height: 1.55; }
+  .notes-panel p + p { margin-top: 8px; }
+  .notes-panel .label { margin-bottom: 6px; }
+  #print-root { display: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .slide.is-active { animation: slide-in 220ms ease-out; }
+  @keyframes slide-in { from { opacity: 0; } to { opacity: 1; } }
+  .title-map .pin-ping { animation: ping 2.4s ease-out infinite; }
+  @keyframes ping { from { transform: scale(1); opacity: 0.5; } to { transform: scale(3.4); opacity: 0; } }
+}
+
+/* ---------- print: one slide per page, or slide plus speaker notes ---------- */
+@page { size: 1280px 720px; margin: 0; }
+@media print {
+  html, body { height: auto; overflow: visible; background: #fff; }
+  .stage, .controls, .notes-panel, .live { display: none !important; }
+  #print-root { display: block; }
+  .sheet { position: relative; width: 1280px; height: 720px; overflow: hidden; break-after: page; page-break-after: always; }
+  .sheet:last-child { break-after: auto; page-break-after: auto; }
+  .sheet .slide { display: flex; position: relative; width: 1280px; height: 720px; border-radius: 0; box-shadow: none; animation: none; }
+  .sheet .pin-ping { display: none; }
+  /* Blurred shadows print as solid boxes in Preview: labels get a plain backing, phones lose their shadow. */
+  .sheet .pin-label { text-shadow: none; padding: 2px 5px; border-radius: 3px; background: var(--color-night); }
+  .sheet .shot { box-shadow: none; }
+  .with-notes .sheet { height: 1000px; }
+  .sheet-notes { height: 280px; padding: 26px 64px; border-top: 1px solid var(--color-line); background: #fff; color: var(--color-ink); font-size: 14px; line-height: 1.55; overflow: hidden; }
+  .sheet-notes .label { margin-bottom: 8px; color: var(--color-accent); }
+  .sheet-notes p + p { margin-top: 6px; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
