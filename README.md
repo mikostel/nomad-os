@@ -2,6 +2,8 @@
 
 A clickable prototype of NOMAD.OS, built with React, Tailwind CSS 4, and shadcn/ui on Base UI primitives. Every screen runs on mock data in `src/data/mock.js`.
 
+Live at https://mikostel.github.io/nomad-os/ (for example `/#agent`), with the Assignment 5 slides at https://mikostel.github.io/nomad-os/deck/. Every push to `main` redeploys through GitHub Actions (`.github/workflows/deploy.yml`).
+
 ## Run it
 
 ```bash
@@ -62,7 +64,7 @@ npm run deck:check    # screenshots every slide, checks overflow, writes the PDF
 ```
 
 - Open the built file in Chrome. Arrow keys or Space move between slides. N shows notes, P opens the presenter view (current and next slide, notes, and a timer), F goes full screen, and M switches between Talk (9 slides) and Full (adds the appendix: where the AI enters, the Assignment 4 framing, evidence table, traceability, and sources, then references).
-- Print and Print with notes, in the bar at the bottom right, print every slide in the current mode. Choose Save as PDF. `npm run deck:check` also writes both PDFs of the full deck, appendix included, to `deck/dist/`. For the 9 talk slides alone, print from Talk mode.
+- Print and Print with notes, in the bar at the bottom right, print every slide in the current mode. Choose Save as PDF. `npm run deck:check` also writes both PDFs of the full deck, appendix included, to `deck/dist/`, plus the speaker script as plain text (`nomad-os-a5-speaker-notes.txt`), easy to email to a phone. For the 9 talk slides alone, print from Talk mode.
 - The phone screens come from the prototype itself. `npm run deck:shots` recaptures them into `deck/img/` after a screen changes, and `npm run deck:map` redraws the dotted map on the title slide.
 
 ## Project layout

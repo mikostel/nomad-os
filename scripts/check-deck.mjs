@@ -4,7 +4,8 @@
 // Renders every slide at 1280x720 into screenshots/deck/, flags anything that spills past the
 // slide's margins, checks images, notes, footers, and the presenter view, then prints the
 // whole deck, appendix included, to deck/dist/ as a PDF, with and without speaker notes.
-import { mkdir } from "node:fs/promises"
+// It also writes the speaker script as plain text, easy to read on a phone.
+import { mkdir, writeFile } from "node:fs/promises"
 import { readFileSync } from "node:fs"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import { chromium } from "@playwright/test"
@@ -110,6 +111,31 @@ for (const [file, withNotes] of [["nomad-os-a5-deck.pdf", false], ["nomad-os-a5-
   console.log(`${pages === total ? "✓" : "!"} deck/dist/${file}: ${pages} pages`)
   if (pages !== total) problems.push(file)
 }
+
+// The speaker script as plain text: the talk in order, then what to say if an appendix slide comes up.
+// Straight quotes, so it reads cleanly in any mail app.
+const slides = await page.evaluate(() => [...document.querySelectorAll("#deck .slide")].map((s) => ({
+  title: s.dataset.title,
+  talk: (s.dataset.mode || "talk").includes("talk"),
+  paras: [...s.querySelectorAll(".notes p")].map((p) => p.textContent.trim()),
+})))
+const plain = (t) => t.replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/…/g, "...")
+const secs = (paras) => Math.round((paras.join(" ").split(/\s+/).length / 150) * 60)
+const talk = slides.filter((x) => x.talk)
+const rule = "------------------------"
+const script = [
+  "NOMAD.OS, Assignment 5",
+  "Speaker script: the exact words to say",
+  `${talk.length} slides, about ${Math.round(talk.reduce((a, x) => a + secs(x.paras), 0) / 60)} minutes, plus the live demo`,
+  "",
+  ...talk.flatMap((x, k) => [rule, `${k + 1}. ${x.title} (${secs(x.paras)} sec)`, "", ...x.paras.map(plain), ""]),
+  rule,
+  "IF ASKED: APPENDIX SLIDES",
+  "",
+  ...slides.filter((x) => !x.talk).flatMap((x) => [x.title, ...x.paras.map(plain), ""]),
+].join("\n")
+await writeFile(`${distDir}nomad-os-a5-speaker-notes.txt`, script)
+console.log(`✓ deck/dist/nomad-os-a5-speaker-notes.txt: ${talk.length} talk slides`)
 
 if (errors.length) { console.log("Console errors:", [...new Set(errors)]); problems.push("console") }
 await browser.close()
