@@ -108,17 +108,29 @@
   .etab td:nth-child(2) { color: var(--color-muted); }
   .etab td:nth-child(3) { color: var(--color-ink); }
 
-  /* Interaction flow: eight steps on one line, the decision filled in */
-  .flow { position: relative; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 16px; }
-  /* The line runs from the first dot's center to the last one's: each column is (100% - 7 gaps) / 8 wide. */
-  .flow::before { content: ""; position: absolute; top: 19px; left: 19px; right: calc((100% - 112px) / 8 - 19px); border-top: 1px solid var(--color-line); }
-  .flow .dot { position: relative; display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid #d4d4d4; border-radius: 99px; background: #fff; color: var(--color-ink); }
-  .flow .key .dot { border-color: var(--color-accent); background: var(--color-accent); color: #fff; box-shadow: 0 0 0 5px var(--color-accent-soft); }
-  .flow .step-t { margin-top: 4px; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--color-ink); }
-  .flow .key .step-t { color: var(--color-accent); }
-  .flow .step-d { margin-top: 6px; font-size: 13.5px; line-height: 1.45; color: var(--color-body); }
-  .flow .step-e { margin-top: 10px; padding: 6px 8px; border-radius: 6px; background: var(--color-panel); font: 400 11px/1.4 var(--font-mono); color: var(--color-muted); }
-  .flow .key .step-e { background: var(--color-accent-wash); color: var(--color-accent-deep); }
+  /* Interaction flow: two lanes show who has control, one line runs through the eight steps.
+     The canvas is 1152 x 430. Dani's dots sit at y 140, the agent's at y 290, columns are 130 wide. */
+  .lanes { position: relative; height: 430px; }
+  .lane { position: absolute; left: 0; right: 0; display: flex; align-items: center; border-radius: 14px; }
+  .lane.dani { top: 0; height: 205px; background: var(--color-accent-wash); }
+  .lane.agent { top: 225px; height: 205px; background: var(--color-panel); }
+  .lane-name { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 84px; font-size: 14px; font-weight: 600; color: var(--color-ink); }
+  .lane-name .ic { width: 20px; height: 20px; color: var(--color-muted); }
+  .lane.dani .lane-name .ic { color: var(--color-accent); }
+  .lane-path { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
+  .lane-path path { fill: none; stroke: #c3cad5; stroke-width: 2; stroke-linecap: round; }
+  .ndot { position: absolute; display: grid; place-items: center; width: 48px; height: 48px; border: 1.5px solid #d4d4d4; border-radius: 99px; background: #fff; color: var(--color-ink); transform: translate(-50%, -50%); }
+  .ndot .ic { width: 20px; height: 20px; }
+  .ndot.dani { border-color: #bfd4fe; color: var(--color-accent); }
+  /* A spread-only ring: blurred shadows print as boxes in Preview */
+  .ndot.key { width: 64px; height: 64px; border: 0; background: var(--color-accent); color: #fff; box-shadow: 0 0 0 6px var(--color-accent-soft); }
+  .ndot.key .ic { width: 28px; height: 28px; }
+  .nlab { position: absolute; width: 130px; transform: translateX(-50%); text-align: center; }
+  .nlab.up { bottom: 326px; }
+  .nlab.down { top: 326px; }
+  .node-n { font: 500 11px/1 var(--font-mono); letter-spacing: 0.06em; color: var(--color-accent); }
+  .node-t { margin-top: 6px; font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; color: var(--color-ink); }
+  .node-c { margin-top: 3px; font-size: 12.5px; line-height: 1.35; color: var(--color-muted); }
 
   /* Prototype phones with captions */
   .phone .shot { width: 100%; border-radius: 27px; }

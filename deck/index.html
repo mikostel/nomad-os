@@ -252,25 +252,34 @@
 <!-- 07 Interaction flow -->
 <section class="slide" data-title="Interaction flow">
   <p class="kicker">Proposed AI interaction flow</p>
-  <h2 class="hl text-[44px]">Eight steps, one decision point.<span class="dim">The agent never skips the confirm.</span></h2>
-  <ol class="flow mt-9">
-    <li><span class="dot"><i data-i="message-square" class="size-[17px]"></i></span><p class="num mt-4">01</p><p class="step-t">Entry</p><p class="step-d">Agent tab, or Check my setup after a profile downloads.</p><p class="step-e">Four tiles, one text field</p></li>
-    <li><span class="dot"><i data-i="user-round" class="size-[17px]"></i></span><p class="num mt-4">02</p><p class="step-t">User input</p><p class="step-d">A plain request or a tap. The setup check starts with what to share.</p><p class="step-e">“Book a hotel in Mexico City”</p></li>
-    <li><span class="dot"><i data-i="search" class="size-[17px]"></i></span><p class="num mt-4">03</p><p class="step-t">Interpretation</p><p class="step-d">Matches the service, then fills in city, dates, and card.</p><p class="step-e">Hotels, Oct 16 to Nov 2</p></li>
-    <li><span class="dot"><i data-i="sparkles" class="size-[17px]"></i></span><p class="num mt-4">04</p><p class="step-t">AI response</p><p class="step-d">A shortlist with tested Wi-Fi and reviews. Risky options left out, with why.</p><p class="step-e">3 hotels, 1 not offered</p></li>
-    <li class="key"><span class="dot"><i data-i="scan-face" class="size-[17px]"></i></span><p class="num mt-4">05</p><p class="step-t">Human decision</p><p class="step-d">A confirm card: cost, card, terms, what’s shared. Confirm, change, or cancel.</p><p class="step-e">Face ID over $100. Change goes back to 04</p></li>
-    <li><span class="dot"><i data-i="circle-check" class="size-[17px]"></i></span><p class="num mt-4">06</p><p class="step-t">Feedback</p><p class="step-d">Typing, then a receipt that says how it’s protected.</p><p class="step-e">“Wi-Fi tested at 210 Mbps”</p></li>
-    <li><span class="dot"><i data-i="undo-2" class="size-[17px]"></i></span><p class="num mt-4">07</p><p class="step-t">Recovery</p><p class="step-d">Refuses unsafe payments and offers another way. Any booking can be cancelled.</p><p class="step-e">“I didn’t book Pátio 14”</p></li>
-    <li><span class="dot"><i data-i="arrow-right" class="size-[17px]"></i></span><p class="num mt-4">08</p><p class="step-t">Exit</p><p class="step-d">Files it in Trips, names what’s left, then waits.</p><p class="step-e">“2 things to fix before you fly”</p></li>
-  </ol>
-  <div class="mt-auto grid grid-cols-2 gap-4">
-    <div class="card flex gap-3 p-4"><i data-i="circle-help" class="mt-0.5 size-[18px] text-accent"></i><div><p class="text-[14px] font-semibold text-ink">Uncertainty, shown plainly</p><p class="mt-1 text-[13px] leading-[1.45] text-body">Prices show an about-amount in dollars. Wi-Fi speeds come from other nomads’ tests. Ratings show how many reviews.</p></div></div>
-    <div class="card flex gap-3 p-4"><i data-i="hand" class="mt-0.5 size-[18px] text-accent"></i><div><p class="text-[14px] font-semibold text-ink">When it can’t help</p><p class="mt-1 text-[13px] leading-[1.45] text-body">It says what it can do instead, or hands off: “You can call Pátio 14 yourself.” Nothing is left half done.</p></div></div>
+  <h2 class="hl text-[44px]">Dani starts it and decides it.<span class="dim">The agent does the work, then hands it back.</span></h2>
+  <!-- Two lanes show who has control. One line runs through the eight steps: Dani's labels sit above it, the agent's below. -->
+  <div class="lanes mt-7">
+    <div class="lane dani"><span class="lane-name"><i data-i="user-round"></i>Dani</span></div>
+    <div class="lane agent"><span class="lane-name"><i data-i="sparkles"></i>Agent</span></div>
+    <svg class="lane-path" viewBox="0 0 1152 430" aria-hidden="true"><path d="M149 140 L279 140 C344 140 344 290 409 290 L539 290 C604 290 604 140 669 140 C734 140 734 290 799 290 L929 290 C994 290 994 140 1059 140"/></svg>
+    <div class="nlab up" style="left:149px"><p class="node-n">01</p><p class="node-t">Entry point</p><p class="node-c">Opens the Agent tab</p></div>
+    <span class="ndot dani" style="left:149px; top:140px"><i data-i="smartphone"></i></span>
+    <div class="nlab up" style="left:279px"><p class="node-n">02</p><p class="node-t">User input</p><p class="node-c">“Book a hotel…”</p></div>
+    <span class="ndot dani" style="left:279px; top:140px"><i data-i="message-square"></i></span>
+    <span class="ndot" style="left:409px; top:290px"><i data-i="search"></i></span>
+    <div class="nlab down" style="left:409px"><p class="node-n">03</p><p class="node-t">Interpretation</p><p class="node-c">City, dates, card</p></div>
+    <span class="ndot" style="left:539px; top:290px"><i data-i="list-checks"></i></span>
+    <div class="nlab down" style="left:539px"><p class="node-n">04</p><p class="node-t">AI response</p><p class="node-c">3 hotels, 1 left out</p></div>
+    <div class="nlab up w-[230px]" style="left:669px; bottom:344px"><p class="node-n">05</p><p class="node-t text-[18px] text-accent-deep">Human decision</p><p class="mt-2 flex justify-center gap-1.5 text-[12px]" aria-label="Confirm, change, or cancel"><span class="rounded-md bg-accent px-2 py-0.5 font-semibold text-white">Confirm</span><span class="rounded-md border border-[#bfd4fe] bg-white px-2 py-0.5 font-medium text-ink">Change</span><span class="px-1 py-0.5 font-medium text-muted">Cancel</span></p></div>
+    <span class="ndot key" style="left:669px; top:140px"><i data-i="scan-face"></i></span>
+    <span class="ndot" style="left:799px; top:290px"><i data-i="circle-check"></i></span>
+    <div class="nlab down" style="left:799px"><p class="node-n">06</p><p class="node-t">Feedback</p><p class="node-c">Typing, then a receipt</p></div>
+    <span class="ndot" style="left:929px; top:290px"><i data-i="shield-alert"></i></span>
+    <div class="nlab down" style="left:929px"><p class="node-n">07</p><p class="node-t">Recovery</p><p class="node-c">Says no, offers another way</p></div>
+    <div class="nlab up w-[160px]" style="left:1059px"><p class="node-n">08</p><p class="node-t">Exit and handoff</p><p class="node-c">Booking lands in Trips</p></div>
+    <span class="ndot dani" style="left:1059px; top:140px"><i data-i="plane"></i></span>
   </div>
   <aside class="notes">
-    <p>Here’s the interaction over time, using the hotel booking. Entry is the Agent tab, with four tiles and a text field. Dani taps Book a hotel or types the request. The system matches it to hotels and fills in the trip: Mexico City, October 16 to November 2. The agent responds with three hotels, each with Wi-Fi other nomads tested, and leaves one listing out, with the reason.</p>
-    <p>The human decision is the center of the flow. The confirm card shows everything that matters, and Dani can confirm, change, or cancel. Change loops back to the options.</p>
-    <p>Feedback is a typing state, then a receipt that says how the booking is protected. We show uncertainty plainly: prices are about-amounts in dollars, Wi-Fi speeds are measured by other nomads, and ratings show how many reviews they’re based on. Recovery covers two cases: the agent refuses an unsafe payment and offers another way, and every booking can be cancelled later. Finally, it files the booking in Trips, names what’s left before the flight, and stops.</p>
+    <p>Here’s the interaction over time, using the hotel booking. The top lane is Dani, the bottom lane is the agent, and the line shows who has control at each step.</p>
+    <p>Dani starts it. Step 1, the entry point: Dani opens the Agent tab, and nothing starts on its own. Step 2: Dani taps Book a hotel, or types it. Then the agent works. Step 3: it matches the request to hotels and fills in Mexico City, the dates, and the card. Step 4: three hotels with Wi-Fi other nomads tested, and one listing left out, with the reason.</p>
+    <p>Control comes back up for step 5, the human decision. One confirm card shows the cost, the card, the terms, and what gets shared, and Dani can confirm, change, or cancel. Over 100 dollars needs Face ID, and Change goes back to the options.</p>
+    <p>Then the agent follows through. Step 6: typing, then a receipt, with estimates labeled, like about 1,309 dollars. Step 7, recovery: if a payment looks unsafe, it says no, explains why, and offers another way; if it can’t help, it says what it can do. Step 8: it files the booking in Trips, names what’s left before the flight, and hands control back.</p>
   </aside>
 </section>
 
