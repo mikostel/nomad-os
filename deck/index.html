@@ -28,7 +28,7 @@
     </div>
   </div>
   <aside class="notes">
-    <p>We’re presenting NOMAD.OS, a phone for people without a home base. For this assignment we added one layer of AI: a travel agent inside the app. It books trains, hotels, and dinner from a chat, and it never pays or shares anything without your OK. Our user, Dani, is in Lisbon and flies to Mexico City in three days.</p>
+    <p>We’re presenting NOMAD.OS, a phone for people without a home base. For this assignment, we added one layer of AI: a travel agent inside the app. It books trains, hotels, and dinner from a chat, and it never pays or shares anything without your OK. Our user, Dani, is in Lisbon and flies to Mexico City in three days.</p>
   </aside>
 </section>
 
@@ -161,7 +161,7 @@
     </table>
   </div>
   <aside class="notes">
-    <p>Our opportunity: remote workers face bookings and setup decisions spread across separate apps, and each app leaves the risks in between to guesswork. We want to help them book what they need and arrive set up, approving every payment and detail. AI isn’t automatically the answer, so we compared three options. Only an agent does all four, and only with a confirm step and hard limits.</p>
+    <p>Here’s our opportunity. Remote workers juggle bookings and setup decisions across separate apps, and each app leaves the risks in between to guesswork. We want to help them book what they need and arrive set up, approving every payment and detail. AI isn’t automatically the answer, so we compared three options. Only an agent books, fits your setup, spots risks, and explains each step, and only with a confirm step and hard limits.</p>
   </aside>
 </section>
 
@@ -195,7 +195,7 @@
     </div>
     <p class="label absolute left-[862px] top-0">What it hands back</p>
     <p class="io" style="left:862px; top:74px"><i data-i="list-checks"></i>Shortlists with tested Wi-Fi</p>
-    <p class="io" style="left:862px; top:126px"><i data-i="shield-alert"></i>Risk flags, with why</p>
+    <p class="io" style="left:862px; top:126px"><i data-i="shield-alert"></i>Warnings, with the reason</p>
     <p class="io" style="left:862px; top:178px"><i data-i="scan-face"></i>Confirm cards</p>
     <p class="io" style="left:862px; top:230px"><i data-i="plane"></i>Bookings in Trips</p>
   </div>
@@ -204,7 +204,7 @@
     <p class="flex flex-wrap gap-2"><span class="chip h-7 px-3 text-[13.5px]">Choosing</span><span class="chip h-7 px-3 text-[13.5px]">Paying</span><span class="chip h-7 px-3 text-[13.5px]">What’s shared</span><span class="chip h-7 px-3 text-[13.5px]">Cancelling</span><span class="chip h-7 px-3 text-[13.5px]">Anything in a bank</span></p>
   </div>
   <aside class="notes">
-    <p>Primary role: agent. It takes actions for Dani, within limits Dani sets, because the safe choice depends on dates, card, and network at once. Secondary role: interpreter, which explains Dani’s setup. On the left is what it reads, with banks only if shared. On the right is what it hands back. And along the bottom, what never moves: choosing, paying, sharing, and cancelling stay with Dani.</p>
+    <p>Our primary AI role is an agent. It takes actions for Dani, within limits Dani sets, because the safe choice depends on dates, card, and network all at once. Its secondary role is an interpreter that explains Dani’s setup. On the left is what it reads, and on the right is what it hands back. Choosing, paying, sharing, and cancelling always stay with Dani.</p>
   </aside>
 </section>
 
@@ -236,7 +236,7 @@
     <li class="rule never"><i data-i="ban"></i><span><b class="font-semibold">Never:</b> pays off-site or by transfer, changes bank settings, hides location</span></li>
   </ul>
   <aside class="notes">
-    <p>In every row, the agent prepares and Dani decides. The agent never starts on its own, fills in the details, and shortlists options. Dani picks, and the confirm card is where both meet: Dani confirms, changes, or cancels. Along the bottom are the rules: it asks before money or personal details, says why it leaves things out, owns what the card showed, and never touches bank settings.</p>
+    <p>In every row, the agent prepares and Dani decides. The agent never starts on its own. It fills in the details and shortlists the options. Dani picks one, and on the confirm card, Dani confirms, changes, or cancels. The agent always asks before spending money or sharing details, explains what it leaves out, and never touches bank settings. If it’s wrong, we answer for what the card showed.</p>
   </aside>
 </section>
 
@@ -267,7 +267,7 @@
     <span class="ndot dani" style="left:1059px; top:140px"><i data-i="plane"></i></span>
   </div>
   <aside class="notes">
-    <p>Here’s the flow over time: Dani on top, the agent below. Dani starts it, opening the Agent tab and asking for a hotel. The agent interprets the request and shortlists options. Control comes back to Dani for the decision: confirm, change, or cancel, with Face ID over 100 dollars. Then the agent follows through, recovers if something looks unsafe, and hands control back.</p>
+    <p>Here’s the flow over time, with Dani on top and the agent below. Dani starts it by opening the Agent tab and asking for a hotel. The agent reads the request and shortlists options. Then control comes back to Dani to confirm, change, or cancel, with Face ID over 100 dollars. Finally, the agent follows through, steps in if something looks unsafe, and hands control back.</p>
   </aside>
 </section>
 
@@ -289,8 +289,7 @@
     <img class="shot w-[230px] rounded-[35px]" src="./img/ask.jpg" alt="The Agent tab in the prototype: four tiles for train, dinner, delivery, and hotel, and Check my setup.">
   </div>
   <aside class="notes">
-    <p>Let’s switch to the live prototype. We’ll show four moments: booking a hotel with the confirm card and Face ID, a refused bank-transfer deposit at dinner, cancelling a booking, and Check my setup.</p>
-    <p>Clicks: Book a hotel, Casa Roma Suites, Confirm booking. New chat, Find dinner, Pátio 14. Open the hotel receipt, Cancel booking. Four layers, Check my setup, approve, undo.</p>
+    <p>Now let’s see it live. First, I’ll book a hotel. Here’s the confirm card, and because it’s over 100 dollars, it asks for Face ID. Next, dinner. This restaurant wants a deposit by bank transfer, so the agent refuses and says why. Then I’ll cancel a booking, and it shows exactly what comes back. Finally, Check my setup explains each step, and nothing changes until I approve it.</p>
   </aside>
 </section>
 
@@ -298,32 +297,39 @@
 <section class="slide" data-title="Human flourishing">
   <p class="kicker">Human flourishing</p>
   <h2 class="hl text-[44px]">Agency and learning.<span class="dim">Help that doesn’t take over.</span></h2>
-  <div class="mt-8">
-    <div class="grid grid-cols-[250px_1fr_1fr_1fr] gap-5 px-5 pb-3">
+  <!-- Each row reads left to right as one sentence: it helps, but it could backfire, so we built this. -->
+  <div class="mt-7">
+    <div class="grid grid-cols-[210px_1fr_34px_1fr_34px_1fr] gap-4 px-5 pb-3">
       <span></span>
-      <p class="flex items-center gap-2.5 text-[16px] font-semibold text-ink"><span class="icn sm blue"><i data-i="sparkles"></i></span>Opportunity</p>
-      <p class="flex items-center gap-2.5 text-[16px] font-semibold text-ink"><span class="icn sm warn"><i data-i="triangle-alert"></i></span>Risk</p>
-      <p class="flex items-center gap-2.5 text-[16px] font-semibold text-ink"><span class="icn sm key"><i data-i="shield-check"></i></span>Safeguard</p>
+      <div class="flex items-center gap-2.5"><span class="icn sm blue"><i data-i="sparkles"></i></span><div><p class="text-[16px] font-semibold text-ink">Opportunity</p><p class="text-[12.5px] text-muted">How it helps</p></div></div>
+      <span></span>
+      <div class="flex items-center gap-2.5"><span class="icn sm warn"><i data-i="triangle-alert"></i></span><div><p class="text-[16px] font-semibold text-ink">Risk</p><p class="text-[12.5px] text-muted">How it could backfire</p></div></div>
+      <span></span>
+      <div class="flex items-center gap-2.5"><span class="icn sm key"><i data-i="shield-check"></i></span><div><p class="text-[16px] font-semibold text-ink">Safeguard</p><p class="text-[12.5px] text-muted">What we built</p></div></div>
     </div>
-    <div class="grid grid-cols-[250px_1fr_1fr_1fr] items-center gap-5 rounded-[14px] bg-panel p-5">
-      <div class="flex items-center gap-3"><span class="icn sm"><i data-i="hand"></i></span><div><p class="text-[16px] font-semibold text-ink">Agency and autonomy</p><p class="text-[12.5px] text-muted">Real choice and control</p></div></div>
-      <p class="text-[16px] leading-[1.4] text-ink">Dani makes every choice that matters.</p>
-      <p class="text-[16px] leading-[1.4] text-ink">Tapping yes without reading.</p>
-      <p class="rounded-[10px] bg-accent px-4 py-3 text-[15.5px] font-medium leading-[1.4] text-white">Short cards. Face ID only over $100.</p>
+    <div class="grid grid-cols-[210px_1fr_34px_1fr_34px_1fr] items-center gap-4 rounded-[14px] bg-panel p-5">
+      <div class="flex items-center gap-3"><span class="icn sm"><i data-i="hand"></i></span><div><p class="text-[16px] font-semibold text-ink">Agency</p><p class="text-[12.5px] leading-[1.35] text-muted">Does Dani stay in control?</p></div></div>
+      <p class="text-[15.5px] leading-[1.4] text-ink">Dani makes every choice that matters.</p>
+      <p class="flex flex-col items-center text-[12.5px] font-medium text-dim">but<i data-i="arrow-right" class="size-[15px]"></i></p>
+      <p class="text-[15.5px] leading-[1.4] text-ink">Dani may tap Confirm without reading.</p>
+      <p class="flex flex-col items-center text-[12.5px] font-medium text-dim">so<i data-i="arrow-right" class="size-[15px]"></i></p>
+      <p class="rounded-[10px] bg-accent px-4 py-3 text-[15px] font-medium leading-[1.4] text-white">Confirm cards show only cost, payment, and what’s shared.<span class="mt-1 block text-white/85">Face ID only over $100.</span></p>
     </div>
-    <div class="mt-3 grid grid-cols-[250px_1fr_1fr_1fr] items-center gap-5 rounded-[14px] bg-panel p-5">
-      <div class="flex items-center gap-3"><span class="icn sm"><i data-i="book-open"></i></span><div><p class="text-[16px] font-semibold text-ink">Learning and capability</p><p class="text-[12.5px] text-muted">Judgment and skill</p></div></div>
-      <p class="text-[16px] leading-[1.4] text-ink">Every flag and fix says why.</p>
-      <p class="text-[16px] leading-[1.4] text-ink">Never learning to judge alone.</p>
-      <p class="rounded-[10px] bg-accent px-4 py-3 text-[15.5px] font-medium leading-[1.4] text-white">“Do it yourself next time” on every fix.</p>
+    <div class="mt-3 grid grid-cols-[210px_1fr_34px_1fr_34px_1fr] items-center gap-4 rounded-[14px] bg-panel p-5">
+      <div class="flex items-center gap-3"><span class="icn sm"><i data-i="book-open"></i></span><div><p class="text-[16px] font-semibold text-ink">Learning</p><p class="text-[12.5px] leading-[1.35] text-muted">Does Dani learn to do it alone?</p></div></div>
+      <p class="text-[15.5px] leading-[1.4] text-ink">The agent explains every warning, so Dani learns to spot scams.</p>
+      <p class="flex flex-col items-center text-[12.5px] font-medium text-dim">but<i data-i="arrow-right" class="size-[15px]"></i></p>
+      <p class="text-[15.5px] leading-[1.4] text-ink">Dani may lean on the agent and stop learning.</p>
+      <p class="flex flex-col items-center text-[12.5px] font-medium text-dim">so<i data-i="arrow-right" class="size-[15px]"></i></p>
+      <p class="rounded-[10px] bg-accent px-4 py-3 text-[15px] font-medium leading-[1.4] text-white">Every setup step shows how to do it yourself next time.</p>
     </div>
   </div>
-  <div class="mt-auto grid grid-cols-[1.2fr_1fr] gap-4">
-    <div class="rounded-[14px] border border-line p-5"><p class="label">The tension</p><p class="mt-2 text-[16px] leading-[1.45] text-ink">Filtering scams protects Dani but hides choices. So nothing is hidden silently.</p></div>
-    <div class="rounded-[14px] border border-line p-5"><p class="label">Next test</p><p class="mt-2 text-[16px] leading-[1.45] text-ink">Five nomads, a teammate as the agent. Do they read the confirm card?</p></div>
+  <div class="mt-auto grid grid-cols-2 gap-4">
+    <div class="rounded-[14px] border border-line p-5"><p class="label">The tension</p><p class="mt-2 text-[15.5px] leading-[1.45] text-ink">Hiding scam listings protects Dani but removes choices. So the agent always says what it left out.</p></div>
+    <div class="rounded-[14px] border border-line p-5"><p class="label">Next test</p><p class="mt-2 text-[15.5px] leading-[1.45] text-ink">Five nomads try it while a teammate plays the agent. Do they read the confirm card? Can they repeat a setup step alone?</p></div>
   </div>
   <aside class="notes">
-    <p>Two dimensions. Agency: Dani makes every choice that matters. The risk is tapping yes without reading, so cards stay short and Face ID only appears over 100 dollars. Learning: every flag and fix says why. The risk is never learning to judge alone, so every fix shows how to do it yourself. The tension: filtering scams hides choices, so nothing is hidden silently. Thank you.</p>
+    <p>For agency, Dani makes every choice that matters. But Dani might tap Confirm without reading, so confirm cards show only cost, payment, and what’s shared, and Face ID only appears over 100 dollars. For learning, the agent explains every warning, so Dani learns to spot scams. But Dani might lean on it, so every setup step shows how to do it yourself. And when it hides a scam listing, it always says so. Thank you.</p>
   </aside>
 </section>
 
@@ -345,7 +351,7 @@
     <div class="mb-4 break-inside-avoid"><dt class="font-semibold text-ink">How does control return?</dt><dd class="mt-0.5 text-body">The booking sits in Trips, the chat waits, and every thread is saved in history.</dd></div>
   </dl>
   <aside class="notes">
-    <p>Backup for questions about Part 4: exactly where the AI enters the experience, what it uses, and how control returns to the user.</p>
+    <p>If you’re wondering exactly where the AI enters: it only starts when Dani opens the Agent tab or taps Check my setup. It uses only what Dani shares, anything that costs money or shares details needs approval, and every booking can be changed or cancelled.</p>
   </aside>
 </section>
 
@@ -367,7 +373,7 @@
     <p class="fills mt-2 text-[15px] leading-[1.55] text-body">For <b>digital nomads and remote workers</b> who value <b>self-reliance and freedom of movement</b> but experience <b>security systems that assume a home</b>, NOMAD.OS helps them <b>arrive in any country already set up, and recover from anywhere</b> by <b>downloading one profile per country that sets four layers: network, money, numbers, and a safety net</b>.</p>
   </div>
   <aside class="notes">
-    <p>From Assignment 4: our three opportunity areas, written with the assignment template, and the value proposition for the one we chose. This assignment’s agent grows out of the selected area: arrive set up, and recover from anywhere.</p>
+    <p>These are the three opportunity areas from our Assignment 4 research. We chose security that moves with you: helping nomads arrive set up and recover from anywhere. This agent grows out of that choice.</p>
   </aside>
 </section>
 
@@ -390,7 +396,7 @@
     </tbody>
   </table>
   <aside class="notes">
-    <p>From Assignment 4: the evidence behind every E code, with the source, what we observed, our interpretation, the value, and the tension. Items 1 to 9.</p>
+    <p>This is the evidence behind the codes on slide 3: 27 public posts from our Assignment 4 research. For each one, we noted the source, what we saw, and what we think it means.</p>
   </aside>
 </section>
 
@@ -413,7 +419,7 @@
     </tbody>
   </table>
   <aside class="notes">
-    <p>Items 10 to 18, including the two platform policies that assume a home, and the threads about keeping a home number alive for codes.</p>
+    <p>These items include the platform policies that assume you have a home, and the threads about keeping a home number alive for bank codes.</p>
   </aside>
 </section>
 
@@ -436,7 +442,7 @@
     </tbody>
   </table>
   <aside class="notes">
-    <p>Items 19 to 27, including E22, the stolen phone in Asunción, and E23, three conflicting answers in one week.</p>
+    <p>And these include the stolen phone in Asunción, and three conflicting answers about bank codes in a single week.</p>
   </aside>
 </section>
 
@@ -460,7 +466,7 @@
     </tbody>
   </table>
   <aside class="notes">
-    <p>From Assignment 4: how each finding maps to a design response, and to the screen in the prototype that carries it.</p>
+    <p>This table traces each finding to a design response, and to the screen in the prototype that carries it.</p>
   </aside>
 </section>
 
@@ -498,7 +504,7 @@
   </ol>
   <p class="mt-auto pt-4 text-[11.5px] leading-[1.45] text-muted">Reddit items come from Google listings filtered to the study window, dates estimated from post IDs; X posts were opened and checked by hand. Dates are publication or comment dates where shown; otherwise estimated from the page’s indexed age and given to the month. Policy pages were read in October 2026. Usernames are omitted throughout.</p>
   <aside class="notes">
-    <p>From Assignment 4: the link for every evidence item, and how we collected and dated them.</p>
+    <p>Here are the sources for every evidence item, and how we collected and dated them.</p>
   </aside>
 </section>
 
@@ -517,7 +523,7 @@
     <li class="grid grid-cols-[1fr_270px] gap-8"><p class="text-ink">NOMAD.OS team. (2026). <i>Assignment 4 research: 27 public posts on how nomads stay secure, E1 to E27</i>. IDSN 523.</p><p class="text-muted">Evidence codes on slide 3, in full in Appendix C</p></li>
   </ol>
   <aside class="notes">
-    <p>Products, precedents, and research we used. The E codes on slide 3 point to our Assignment 4 evidence table in Appendix C, with a link for each item in Appendix E.</p>
+    <p>And these are our references: the products, precedents, and research we drew on.</p>
   </aside>
 </section>
 

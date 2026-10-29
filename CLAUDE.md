@@ -34,7 +34,7 @@ Clickable prototype for a product design class. Not production code.
 - Appendices B to E (framing, the E1 to E27 evidence table, traceability, sources) are carried over word for word from the Assignment 4 deck. Restyle them freely, but don't rewrite their content.
 - Icons are `<i data-i="name">`, filled in from `deck/icons.js` (Lucide paths). Add the path there before using a new name.
 - Talk slides are visual first: one diagram per slide in the slide 7 style (icon dots, lanes, connecting lines), a few words per item, and the detail in the speaker notes. Slide 4's opportunity statement stays word for word.
-- Speaker notes run 20 to 30 seconds per talk slide (about 55 to 75 words), because the live demo needs the time. `npm run deck:check` flags anything over 80 words.
+- Speaker notes are the exact words the presenter says, read as written: no stage directions, labels, or click lists. On the demo slide, first-person narration ("First, I'll book a hotel") carries the click path. Talk slides run 20 to 30 seconds (about 55 to 75 words), because the live demo needs the time; `npm run deck:check` flags anything over 80 words.
 - The prototype is demoed live, so the deck has no screenshot slides. The live demo slide uses `deck/img/ask.jpg`, captured from the prototype with `npm run deck:shots`; recapture it after changing the Agent tab.
 - After editing the deck, run `npm run deck:build && npm run deck:check`, look at `screenshots/deck/`, and fix overflow before reporting back. The check also writes the PDFs to `deck/dist/`.
 - Blurred shadows (text-shadow, or box-shadow with blur) print as solid boxes in Preview. Turn them off under `@media print` in `deck.css`.
